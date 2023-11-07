@@ -27,22 +27,22 @@ public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date departureDateTime;
-    
+
     @Column(nullable = false)
     private Integer estimatedDuration;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date arrivalDateTime;
-    
+
     @ManyToOne
     @JoinColumn(name = "flight_schedule_plan_id")
     private FlightSchedulePlan flightSchedulePlan;
-    
+
     public FlightSchedule() {
     }
 
@@ -58,6 +58,38 @@ public class FlightSchedule implements Serializable {
 
     public void setFlightScheduleId(Long flightScheduleId) {
         this.flightScheduleId = flightScheduleId;
+    }
+
+    public Date getDepartureDateTime() {
+        return departureDateTime;
+    }
+
+    public void setDepartureDateTime(Date departureDateTime) {
+        this.departureDateTime = departureDateTime;
+    }
+
+    public Integer getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    public void setEstimatedDuration(Integer estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
+    }
+
+    public Date getArrivalDateTime() {
+        return arrivalDateTime;
+    }
+
+    public void setArrivalDateTime(Date arrivalDateTime) {
+        this.arrivalDateTime = arrivalDateTime;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
     }
 
     @Override
@@ -85,43 +117,4 @@ public class FlightSchedule implements Serializable {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
 
-    
-    public Date getDepartureDateTime() {
-        return departureDateTime;
-    }
-
-    
-    public void setDepartureDateTime(Date departureDateTime) {
-        this.departureDateTime = departureDateTime;
-    }
-
-   
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
-    }
-
-    
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
-    }
-
-    
-    public Date getArrivalDateTime() {
-        return arrivalDateTime;
-    }
-
-    
-    public void setArrivalDateTime(Date arrivalDateTime) {
-        this.arrivalDateTime = arrivalDateTime;
-    }
-
-    
-    public FlightSchedulePlan getFlightSchedulePlan() {
-        return flightSchedulePlan;
-    }
-
-        public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        this.flightSchedulePlan = flightSchedulePlan;
-    }
-    
 }
