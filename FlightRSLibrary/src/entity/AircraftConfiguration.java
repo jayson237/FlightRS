@@ -83,86 +83,50 @@ public class AircraftConfiguration implements Serializable {
         return "entity.AircraftConfiguration[ id=" + aircraftConfigurationId + " ]";
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the numOfCabinClass
-     */
     public Integer getNumOfCabinClass() {
         return numOfCabinClass;
     }
 
-    /**
-     * @param numOfCabinClass the numOfCabinClass to set
-     */
     public void setNumOfCabinClass(Integer numOfCabinClass) {
         this.numOfCabinClass = numOfCabinClass;
     }
 
-    /**
-     * @return the maxSeats
-     */
     public Integer getMaxSeats() {
         return maxSeats;
     }
 
-    /**
-     * @param maxSeats the maxSeats to set
-     */
     public void setMaxSeats(Integer maxSeats) {
         this.maxSeats = maxSeats;
     }
 
-    /**
-     * @return the flights
-     */
     public Flight getFlights() {
         return flight;
     }
 
-    /**
-     * @param flights the flights to set
-     */
     public void setFlights(Flight flights) {
         this.flight = flight;
     }
 
-    /**
-     * @return the cabinClasses
-     */
     public List<CabinClass> getCabinClasses() {
         return cabinClasses;
     }
 
-    /**
-     * @param cabinClasses the cabinClasses to set
-     */
     public void setCabinClasses(List<CabinClass> cabinClasses) {
         this.cabinClasses = cabinClasses;
     }
 
-    /**
-     * @return the aircraft
-     */
     public Aircraft getAircraft() {
         return aircraft;
     }
 
-    /**
-     * @param aircraft the aircraft to set
-     */
     public void setAircraft(Aircraft aircraft) {
         this.aircraft = aircraft;
     }

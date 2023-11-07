@@ -56,8 +56,6 @@ public class FlightSchedulePlan implements Serializable {
         this.complementaryReturnFlight = complementaryReturnFlight;
         this.layOverDuration = layOverDuration;
     }
-    
-    
 
     public Long getFlightSchedulePlanId() {
         return flightSchedulePlanId;
@@ -92,88 +90,52 @@ public class FlightSchedulePlan implements Serializable {
         return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
     }
 
-    /**
-     * @return the type
-     */
     public FlightScheduleType getFlightSchedule() {
         return type;
     }
 
-    /**
-     * @param flightSchedule the type to set
-     */
     public void setFlightSchedule(FlightScheduleType flightSchedule) {
         this.type = flightSchedule;
     }
 
-    /**
-     * @return the recurrentEndDate
-     */
     public Date getRecurrentEndDate() {
         return recurrentEndDate;
     }
 
-    /**
-     * @param recurrentEndDate the recurrentEndDate to set
-     */
     public void setRecurrentEndDate(Date recurrentEndDate) {
         this.recurrentEndDate = recurrentEndDate;
     }
 
-    /**
-     * @return the complementaryReturnFlight
-     */
     public boolean isComplementaryReturnFlight() {
         return complementaryReturnFlight;
     }
 
-    /**
-     * @param complementaryReturnFlight the complementaryReturnFlight to set
-     */
     public void setComplementaryReturnFlight(boolean complementaryReturnFlight) {
         this.complementaryReturnFlight = complementaryReturnFlight;
     }
 
-    /**
-     * @return the layOverDuration
-     */
     public Integer getLayOverDuration() {
         return layOverDuration;
     }
 
-    /**
-     * @param layOverDuration the layOverDuration to set
-     */
     public void setLayOverDuration(Integer layOverDuration) {
         this.layOverDuration = layOverDuration;
     }
 
-    /**
-     * @return the flight
-     */
     public Flight getFlight() {
         return flight;
     }
 
-    /**
-     * @param flight the flight to set
-     */
     public void setFlight(Flight flight) {
         this.flight = flight;
     }
 
-    /**
-     * @return the flightSchedules
-     */
     public List<FlightSchedule> getFlightSchedules() {
         return flightSchedules;
     }
 
-    /**
-     * @param flightSchedules the flightSchedules to set
-     */
     public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
         this.flightSchedules = flightSchedules;
     }
-    
+
 }

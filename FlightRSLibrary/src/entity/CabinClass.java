@@ -23,25 +23,11 @@ import util.enumeration.CabinClassType;
 @Entity
 public class CabinClass implements Serializable {
 
-    /**
-     * @return the aircraftConfiguration
-     */
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    /**
-     * @param aircraftConfiguration the aircraftConfiguration to set
-     */
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
-    }
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
-    @Enumerated (EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private CabinClassType type;
     @Column(nullable = false)
     private Integer numberOfAisles;
@@ -102,88 +88,60 @@ public class CabinClass implements Serializable {
         return "entity.CabinClass[ id=" + cabinClassId + " ]";
     }
 
-    /**
-     * @return the type
-     */
+    public AircraftConfiguration getAircraftConfiguration() {
+        return aircraftConfiguration;
+    }
+
+    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
+        this.aircraftConfiguration = aircraftConfiguration;
+    }
+
     public CabinClassType getType() {
         return type;
     }
 
-    /**
-     * @param type the type to set
-     */
     public void setType(CabinClassType type) {
         this.type = type;
     }
 
-    /**
-     * @return the numberOfAisles
-     */
     public Integer getNumberOfAisles() {
         return numberOfAisles;
     }
 
-    /**
-     * @param numberOfAisles the numberOfAisles to set
-     */
     public void setNumberOfAisles(Integer numberOfAisles) {
         this.numberOfAisles = numberOfAisles;
     }
 
-    /**
-     * @return the numOfRows
-     */
     public Integer getNumOfRows() {
         return numOfRows;
     }
 
-    /**
-     * @param numOfRows the numOfRows to set
-     */
     public void setNumOfRows(Integer numOfRows) {
         this.numOfRows = numOfRows;
     }
 
-    /**
-     * @return the numOfSeatsAbreast
-     */
     public Integer getNumOfSeatsAbreast() {
         return numOfSeatsAbreast;
     }
 
-    /**
-     * @param numOfSeatsAbreast the numOfSeatsAbreast to set
-     */
     public void setNumOfSeatsAbreast(Integer numOfSeatsAbreast) {
         this.numOfSeatsAbreast = numOfSeatsAbreast;
     }
 
-    /**
-     * @return the maxCapacity
-     */
     public Integer getMaxCapacity() {
         return maxCapacity;
     }
 
-    /**
-     * @param maxCapacity the maxCapacity to set
-     */
     public void setMaxCapacity(Integer maxCapacity) {
         this.maxCapacity = maxCapacity;
     }
 
-    /**
-     * @return the seatingConfiguration
-     */
     public String getSeatingConfiguration() {
         return seatingConfiguration;
     }
 
-    /**
-     * @param seatingConfiguration the seatingConfiguration to set
-     */
     public void setSeatingConfiguration(String seatingConfiguration) {
         this.seatingConfiguration = seatingConfiguration;
     }
-    
+
 }

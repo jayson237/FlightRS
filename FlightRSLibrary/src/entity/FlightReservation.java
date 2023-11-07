@@ -43,7 +43,7 @@ public class FlightReservation implements Serializable {
     private String passengerFirstName;
     @Column(length = 32, nullable = false)
     private String passengerLastName;
-    @Column (length = 32, nullable = false, unique = true)
+    @Column(length = 32, nullable = false, unique = true)
     private String passport;
     @OneToOne(mappedBy = "flightReservation")
     @JoinColumn(name = "fare_id")
@@ -64,7 +64,7 @@ public class FlightReservation implements Serializable {
         this.passengerLastName = passengerLastName;
         this.passport = passport;
     }
-    
+
     public Long getFlightReservationId() {
         return flightReservationId;
     }
@@ -98,130 +98,76 @@ public class FlightReservation implements Serializable {
         return "entity.FlightReservation[ id=" + flightReservationId + " ]";
     }
 
-    /**
-     * @return the flightNumber
-     */
     public String getFlightNumber() {
         return flightNumber;
     }
 
-    /**
-     * @param flightNumber the flightNumber to set
-     */
     public void setFlightNumber(String flightNumber) {
         this.flightNumber = flightNumber;
     }
 
-    /**
-     * @return the flightSchedule
-     */
     public Date getFlightSchedule() {
         return flightSchedule;
     }
 
-    /**
-     * @param flightSchedule the flightSchedule to set
-     */
     public void setFlightSchedule(Date flightSchedule) {
         this.flightSchedule = flightSchedule;
     }
 
-    /**
-     * @return the cabinType
-     */
     public CabinClassType getCabinType() {
         return cabinType;
     }
 
-    /**
-     * @param cabinType the cabinType to set
-     */
     public void setCabinType(CabinClassType cabinType) {
         this.cabinType = cabinType;
     }
 
-    /**
-     * @return the seatNumber
-     */
     public String getSeatNumber() {
         return seatNumber;
     }
 
-    /**
-     * @param seatNumber the seatNumber to set
-     */
     public void setSeatNumber(String seatNumber) {
         this.seatNumber = seatNumber;
     }
 
-    /**
-     * @return the passengerFirstName
-     */
     public String getPassengerFirstName() {
         return passengerFirstName;
     }
 
-    /**
-     * @param passengerFirstName the passengerFirstName to set
-     */
     public void setPassengerFirstName(String passengerFirstName) {
         this.passengerFirstName = passengerFirstName;
     }
 
-    /**
-     * @return the passengerLastName
-     */
     public String getPassengerLastName() {
         return passengerLastName;
     }
 
-    /**
-     * @param passengerLastName the passengerLastName to set
-     */
     public void setPassengerLastName(String passengerLastName) {
         this.passengerLastName = passengerLastName;
     }
 
-    /**
-     * @return the passport
-     */
     public String getPassport() {
         return passport;
     }
 
-    /**
-     * @param passport the passport to set
-     */
     public void setPassport(String passport) {
         this.passport = passport;
     }
 
-    /**
-     * @return the fare
-     */
     public Fare getFare() {
         return fare;
     }
 
-    /**
-     * @param fare the fare to set
-     */
     public void setFare(Fare fare) {
         this.fare = fare;
     }
 
-    /**
-     * @return the customer
-     */
     public Customer getCustomer() {
         return customer;
     }
 
-    /**
-     * @param customer the customer to set
-     */
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
-    
+
 }

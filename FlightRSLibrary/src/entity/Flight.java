@@ -30,7 +30,7 @@ public class Flight implements Serializable {
     private String flightNumber;
     @OneToOne(mappedBy = "flight")
     private FlightSchedulePlan flightSchedulePlans;
-    @OneToOne (optional = false)
+    @OneToOne(optional = false)
     private FlightRoute flightRoute;
     @OneToMany
     private AircraftConfiguration aircraftConfiguration;
@@ -75,60 +75,36 @@ public class Flight implements Serializable {
         return "entity.Flight[ id=" + flightId + " ]";
     }
 
-    /**
-     * @return the flightNumber
-     */
     public String getFlightNumber() {
         return flightNumber;
     }
 
-    /**
-     * @param flightNumber the flightNumber to set
-     */
     public void setFlightNumber(String flightNumber) {
         this.flightNumber = flightNumber;
     }
 
-    /**
-     * @return the flightSchedulePlans
-     */
     public FlightSchedulePlan getFlightSchedulePlans() {
         return flightSchedulePlans;
     }
 
-    /**
-     * @param flightSchedulePlans the flightSchedulePlans to set
-     */
     public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
         this.flightSchedulePlans = flightSchedulePlans;
     }
 
-    /**
-     * @return the flightRoute
-     */
     public FlightRoute getFlightRoute() {
         return flightRoute;
     }
 
-    /**
-     * @param flightRoute the flightRoute to set
-     */
     public void setFlightRoute(FlightRoute flightRoute) {
         this.flightRoute = flightRoute;
     }
 
-    /**
-     * @return the aircraftConfiguration
-     */
     public AircraftConfiguration getAircraftConfiguration() {
         return aircraftConfiguration;
     }
 
-    /**
-     * @param aircraftConfiguration the aircraftConfiguration to set
-     */
     public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
         this.aircraftConfiguration = aircraftConfiguration;
     }
-    
+
 }

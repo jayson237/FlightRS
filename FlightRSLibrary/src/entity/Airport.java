@@ -13,7 +13,7 @@ import javax.persistence.Id;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Airport implements Serializable {
@@ -21,52 +21,49 @@ public class Airport implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long airportId;
+    private Long id;
     @Column(length = 64, nullable = false, unique = true)
-    private String name;
-    @Column(length = 32, nullable = false, unique = true)
+    private String airportName;
+    @Column(length = 64, nullable = false, unique = true)
     private String airportCode;
-    @Column(length = 32, nullable = false)
-    private String city;
-    @Column(length = 32)
+    @Column(length = 64, nullable = false)
     private String stateProvince;
-    @Column(length = 32)
+    @Column(length = 64, nullable = false)
     private String country;
 
     public Airport() {
     }
 
-    public Airport(String name, String airportCode, String city, String stateProvince, String country) {
-        this.name = name;
+    public Airport(String airportName, String airportCode, String stateProvince, String country) {
+        this.airportName = airportName;
         this.airportCode = airportCode;
-        this.city = city;
         this.stateProvince = stateProvince;
         this.country = country;
     }
 
-    public Long getAirportId() {
-        return airportId;
+    public Long getId() {
+        return id;
     }
 
-    public void setAirportId(Long airportId) {
-        this.airportId = airportId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (airportId != null ? airportId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the airportId fields are not set
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Airport)) {
             return false;
         }
         Airport other = (Airport) object;
-        if ((this.airportId == null && other.airportId != null) || (this.airportId != null && !this.airportId.equals(other.airportId))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -74,7 +71,39 @@ public class Airport implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Airport[ id=" + airportId + " ]";
+        return "entity.Airport[ id=" + id + " ]";
     }
-    
+
+    public String getAirportName() {
+        return airportName;
+    }
+
+    public void setAirportName(String airportName) {
+        this.airportName = airportName;
+    }
+
+    public String getAirportCode() {
+        return airportCode;
+    }
+
+    public void setAirportCode(String airportCode) {
+        this.airportCode = airportCode;
+    }
+
+    public String getStateProvince() {
+        return stateProvince;
+    }
+
+    public void setStateProvince(String stateProvince) {
+        this.stateProvince = stateProvince;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
 }

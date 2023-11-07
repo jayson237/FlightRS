@@ -78,60 +78,36 @@ public class FlightRoute implements Serializable {
         return "entity.FlightRoute[ id=" + flightRouteId + " ]";
     }
 
-    /**
-     * @return the oriDestAirport
-     */
     public Pair<Airport, Airport> getOriDestAirport() {
         return oriDestAirport;
     }
 
-    /**
-     * @param oriDestAirport the oriDestAirport to set
-     */
     public void setOriDestAirport(Pair<Airport, Airport> oriDestAirport) {
         this.oriDestAirport = oriDestAirport;
     }
 
-    /**
-     * @return the hasReturn
-     */
     public boolean isHasReturn() {
         return hasReturn;
     }
 
-    /**
-     * @param hasReturn the hasReturn to set
-     */
     public void setHasReturn(boolean hasReturn) {
         this.hasReturn = hasReturn;
     }
 
-    /**
-     * @return the isDisabled
-     */
     public boolean isIsDisabled() {
         return isDisabled;
     }
 
-    /**
-     * @param isDisabled the isDisabled to set
-     */
     public void setIsDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
     }
 
-    /**
-     * @return the flights
-     */
     public Flight getFlights() {
         return flights;
     }
 
-    /**
-     * @param flights the flights to set
-     */
     public void setFlights(Flight flights) {
         this.flights = flights;
     }
-    
+
 }

@@ -20,20 +20,6 @@ import javax.persistence.OneToMany;
 @Entity
 public class Customer implements Serializable {
 
-    /**
-     * @return the flightReservations
-     */
-    public List<FlightReservation> getFlightReservations() {
-        return flightReservations;
-    }
-
-    /**
-     * @param flightReservations the flightReservations to set
-     */
-    public void setFlightReservations(List<FlightReservation> flightReservations) {
-        this.flightReservations = flightReservations;
-    }
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,7 +40,6 @@ public class Customer implements Serializable {
     private String password;
     @OneToMany(mappedBy = "customer")
     private List<FlightReservation> flightReservations;
-
 
     public Customer() {
     }
@@ -101,103 +86,69 @@ public class Customer implements Serializable {
     public String toString() {
         return "entity.Customer[ id=" + customerId + " ]";
     }
+    
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
 
-    /**
-     * @return the firstName
-     */
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
+    }
+
     public String getFirstName() {
         return firstName;
     }
 
-    /**
-     * @param firstName the firstName to set
-     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    /**
-     * @return the lastName
-     */
     public String getLastName() {
         return lastName;
     }
 
-    /**
-     * @param lastName the lastName to set
-     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    /**
-     * @return the email
-     */
     public String getEmail() {
         return email;
     }
 
-    /**
-     * @param email the email to set
-     */
     public void setEmail(String email) {
         this.email = email;
     }
 
-    /**
-     * @return the mobileNumber
-     */
     public String getMobileNumber() {
         return mobileNumber;
     }
 
-    /**
-     * @param mobileNumber the mobileNumber to set
-     */
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
-    /**
-     * @return the address
-     */
     public String getAddress() {
         return address;
     }
 
-    /**
-     * @param address the address to set
-     */
     public void setAddress(String address) {
         this.address = address;
     }
 
-    /**
-     * @return the username
-     */
     public String getUsername() {
         return username;
     }
 
-    /**
-     * @param username the username to set
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * @return the password
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * @param password the password to set
-     */
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
 }

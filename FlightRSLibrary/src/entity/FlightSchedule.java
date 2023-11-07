@@ -81,59 +81,42 @@ public class FlightSchedule implements Serializable {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
 
-    /**
-     * @return the departureDateTime
-     */
+    
     public Date getDepartureDateTime() {
         return departureDateTime;
     }
 
-    /**
-     * @param departureDateTime the departureDateTime to set
-     */
+    
     public void setDepartureDateTime(Date departureDateTime) {
         this.departureDateTime = departureDateTime;
     }
 
-    /**
-     * @return the estimatedDuration
-     */
+   
     public Integer getEstimatedDuration() {
         return estimatedDuration;
     }
 
-    /**
-     * @param estimatedDuration the estimatedDuration to set
-     */
+    
     public void setEstimatedDuration(Integer estimatedDuration) {
         this.estimatedDuration = estimatedDuration;
     }
 
-    /**
-     * @return the arrivalDateTime
-     */
+    
     public Date getArrivalDateTime() {
         return arrivalDateTime;
     }
 
-    /**
-     * @param arrivalDateTime the arrivalDateTime to set
-     */
+    
     public void setArrivalDateTime(Date arrivalDateTime) {
         this.arrivalDateTime = arrivalDateTime;
     }
 
-    /**
-     * @return the flightSchedulePlan
-     */
+    
     public FlightSchedulePlan getFlightSchedulePlan() {
         return flightSchedulePlan;
     }
 
-    /**
-     * @param flightSchedulePlan the flightSchedulePlan to set
-     */
-    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
     }
     
