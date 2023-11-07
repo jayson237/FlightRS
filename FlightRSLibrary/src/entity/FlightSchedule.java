@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class FlightSchedule implements Serializable {
@@ -27,14 +27,18 @@ public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date departureDateTime;
+    
     @Column(nullable = false)
     private Integer estimatedDuration;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date arrivalDateTime;
+    
     @ManyToOne
     @JoinColumn(name = "flight_schedule_plan_id")
     private FlightSchedulePlan flightSchedulePlan;

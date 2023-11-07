@@ -5,17 +5,15 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Aircraft implements Serializable {
@@ -24,12 +22,12 @@ public class Aircraft implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftId;
+    
     @Column(length = 32, nullable = false, unique = true)
     private String name;
+    
     @Column(nullable = false)
     private Integer maxCapacity;
-    @OneToMany(mappedBy = "aircraft")
-    private List<AircraftConfiguration> aircraftConfigurations;
 
     public Aircraft() {
     }
@@ -45,6 +43,22 @@ public class Aircraft implements Serializable {
 
     public void setAircraftId(Long aircraftId) {
         this.aircraftId = aircraftId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(Integer maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     @Override
@@ -70,30 +84,6 @@ public class Aircraft implements Serializable {
     @Override
     public String toString() {
         return "entity.Aircraft[ id=" + aircraftId + " ]";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getMaxCapacity() {
-        return maxCapacity;
-    }
-
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
-
-    public List<AircraftConfiguration> getAircraftConfigurations() {
-        return aircraftConfigurations;
-    }
-
-    public void setAircraftConfigurations(List<AircraftConfiguration> aircraftConfigurations) {
-        this.aircraftConfigurations = aircraftConfigurations;
     }
 
 }

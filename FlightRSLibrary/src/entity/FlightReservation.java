@@ -5,24 +5,22 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import util.enumeration.CabinClassType;
+import javax.persistence.OneToMany;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class FlightReservation implements Serializable {
@@ -31,38 +29,25 @@ public class FlightReservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightReservationId;
-    @Column(length = 32, nullable = false)
-    private String flightNumber;
-    @Temporal(TemporalType.DATE)
-    private Date flightSchedule;
-    @Enumerated(EnumType.STRING)
-    private CabinClassType cabinType;
-    @Column(length = 32, nullable = false)
-    private String seatNumber;
-    @Column(length = 32, nullable = false)
-    private String passengerFirstName;
-    @Column(length = 32, nullable = false)
-    private String passengerLastName;
-    @Column(length = 32, nullable = false, unique = true)
-    private String passport;
-    @OneToOne(mappedBy = "flightReservation")
-    @JoinColumn(name = "fare_id")
-    private Fare fare;
-    @ManyToOne
+
+    @Column(nullable = false)
+    private BigDecimal totalAmount;
+
+    @OneToMany
+    private List<Passenger> passengers;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY, cascade = {})
+    private List<Flight> flights;
 
     public FlightReservation() {
     }
 
-    public FlightReservation(String flightNumber, Date flightSchedule, CabinClassType cabinType, String seatNumber, String passengerFirstName, String passengerLastName, String passport) {
-        this.flightNumber = flightNumber;
-        this.flightSchedule = flightSchedule;
-        this.cabinType = cabinType;
-        this.seatNumber = seatNumber;
-        this.passengerFirstName = passengerFirstName;
-        this.passengerLastName = passengerLastName;
-        this.passport = passport;
+    public FlightReservation(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public Long getFlightReservationId() {
@@ -71,6 +56,38 @@ public class FlightReservation implements Serializable {
 
     public void setFlightReservationId(Long flightReservationId) {
         this.flightReservationId = flightReservationId;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
     }
 
     @Override
@@ -96,78 +113,6 @@ public class FlightReservation implements Serializable {
     @Override
     public String toString() {
         return "entity.FlightReservation[ id=" + flightReservationId + " ]";
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
-
-    public Date getFlightSchedule() {
-        return flightSchedule;
-    }
-
-    public void setFlightSchedule(Date flightSchedule) {
-        this.flightSchedule = flightSchedule;
-    }
-
-    public CabinClassType getCabinType() {
-        return cabinType;
-    }
-
-    public void setCabinType(CabinClassType cabinType) {
-        this.cabinType = cabinType;
-    }
-
-    public String getSeatNumber() {
-        return seatNumber;
-    }
-
-    public void setSeatNumber(String seatNumber) {
-        this.seatNumber = seatNumber;
-    }
-
-    public String getPassengerFirstName() {
-        return passengerFirstName;
-    }
-
-    public void setPassengerFirstName(String passengerFirstName) {
-        this.passengerFirstName = passengerFirstName;
-    }
-
-    public String getPassengerLastName() {
-        return passengerLastName;
-    }
-
-    public void setPassengerLastName(String passengerLastName) {
-        this.passengerLastName = passengerLastName;
-    }
-
-    public String getPassport() {
-        return passport;
-    }
-
-    public void setPassport(String passport) {
-        this.passport = passport;
-    }
-
-    public Fare getFare() {
-        return fare;
-    }
-
-    public void setFare(Fare fare) {
-        this.fare = fare;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
     }
 
 }

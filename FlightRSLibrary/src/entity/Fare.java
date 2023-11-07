@@ -19,7 +19,7 @@ import util.enumeration.CabinClassType;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Fare implements Serializable {
@@ -28,13 +28,17 @@ public class Fare implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
+    
     @Column(nullable = false, length = 32, unique = true)
     private String code;
+    
     @Column(precision = 11, scale = 2)
     private BigDecimal amount;
+    
     @Enumerated(EnumType.STRING)
     private CabinClassType cabinClassType;
-    @OneToOne
+    
+    @OneToOne 
     @JoinColumn(name = "flight_reservation_id")
     private FlightReservation flightReservation;
 

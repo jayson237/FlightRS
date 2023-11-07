@@ -18,7 +18,7 @@ import util.enumeration.CabinClassType;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class CabinClass implements Serializable {
@@ -27,18 +27,25 @@ public class CabinClass implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
+    
     @Enumerated(EnumType.STRING)
     private CabinClassType type;
+    
     @Column(nullable = false)
     private Integer numberOfAisles;
+    
     @Column(nullable = false)
     private Integer numOfRows;
+    
     @Column(nullable = false)
     private Integer numOfSeatsAbreast;
+    
     @Column(nullable = false)
     private Integer maxCapacity;
+    
     @Column(nullable = false)
     private String seatingConfiguration;
+    
     @ManyToOne(optional = false)
     @JoinColumn(name = "aircraft_configuration_id", nullable = false)
     private AircraftConfiguration aircraftConfiguration;

@@ -23,7 +23,7 @@ import util.enumeration.FlightScheduleType;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class FlightSchedulePlan implements Serializable {
@@ -32,18 +32,24 @@ public class FlightSchedulePlan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
+
     @Enumerated(EnumType.STRING)
     private FlightScheduleType type;
+
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date recurrentEndDate;
+
     @Column(nullable = false)
     private boolean complementaryReturnFlight;
+
     @Column(nullable = false)
     private Integer layOverDuration;
+
     @OneToOne
     @JoinColumn(name = "flight_id")
     private Flight flight;
+
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
 
@@ -63,31 +69,6 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedulePlanId(Long flightSchedulePlanId) {
         this.flightSchedulePlanId = flightSchedulePlanId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (flightSchedulePlanId != null ? flightSchedulePlanId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the flightSchedulePlanId fields are not set
-        if (!(object instanceof FlightSchedulePlan)) {
-            return false;
-        }
-        FlightSchedulePlan other = (FlightSchedulePlan) object;
-        if ((this.flightSchedulePlanId == null && other.flightSchedulePlanId != null) || (this.flightSchedulePlanId != null && !this.flightSchedulePlanId.equals(other.flightSchedulePlanId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
     }
 
     public FlightScheduleType getFlightSchedule() {
@@ -136,6 +117,31 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
         this.flightSchedules = flightSchedules;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (flightSchedulePlanId != null ? flightSchedulePlanId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the flightSchedulePlanId fields are not set
+        if (!(object instanceof FlightSchedulePlan)) {
+            return false;
+        }
+        FlightSchedulePlan other = (FlightSchedulePlan) object;
+        if ((this.flightSchedulePlanId == null && other.flightSchedulePlanId != null) || (this.flightSchedulePlanId != null && !this.flightSchedulePlanId.equals(other.flightSchedulePlanId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
     }
 
 }

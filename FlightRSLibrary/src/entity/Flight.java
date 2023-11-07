@@ -5,19 +5,20 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Flight implements Serializable {
@@ -26,20 +27,31 @@ public class Flight implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
+
     @Column(length = 32, nullable = false, unique = true)
     private String flightNumber;
+
+    @Column(nullable = false)
+    private Boolean isDisabled;
+
+    @ManyToMany(mappedBy = "flights", cascade = {}, fetch = FetchType.LAZY)
+    private List<FlightReservation> reservations;
+
     @OneToOne(mappedBy = "flight")
     private FlightSchedulePlan flightSchedulePlans;
+
     @OneToOne(optional = false)
     private FlightRoute flightRoute;
+
     @OneToMany
     private AircraftConfiguration aircraftConfiguration;
 
     public Flight() {
     }
 
-    public Flight(String flightNumber) {
+    public Flight(String flightNumber, Boolean isDisabled) {
         this.flightNumber = flightNumber;
+        this.isDisabled = isDisabled;
     }
 
     public Long getFlightId() {
@@ -48,6 +60,54 @@ public class Flight implements Serializable {
 
     public void setFlightId(Long flightId) {
         this.flightId = flightId;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public Boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+    public List<FlightReservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<FlightReservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlans() {
+        return flightSchedulePlans;
+    }
+
+    public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
+    }
+
+    public FlightRoute getFlightRoute() {
+        return flightRoute;
+    }
+
+    public void setFlightRoute(FlightRoute flightRoute) {
+        this.flightRoute = flightRoute;
+    }
+
+    public AircraftConfiguration getAircraftConfiguration() {
+        return aircraftConfiguration;
+    }
+
+    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
+        this.aircraftConfiguration = aircraftConfiguration;
     }
 
     @Override
@@ -73,38 +133,6 @@ public class Flight implements Serializable {
     @Override
     public String toString() {
         return "entity.Flight[ id=" + flightId + " ]";
-    }
-
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
-
-    public FlightSchedulePlan getFlightSchedulePlans() {
-        return flightSchedulePlans;
-    }
-
-    public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
-        this.flightSchedulePlans = flightSchedulePlans;
-    }
-
-    public FlightRoute getFlightRoute() {
-        return flightRoute;
-    }
-
-    public void setFlightRoute(FlightRoute flightRoute) {
-        this.flightRoute = flightRoute;
-    }
-
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
     }
 
 }

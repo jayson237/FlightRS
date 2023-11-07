@@ -14,10 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import util.enumeration.EmployeeRole;
 
-
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Employee implements Serializable {
@@ -26,12 +25,16 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
+    
     @Column(length = 32, nullable = false)
     private String name;
+    
     @Column(length = 32, nullable = false, unique = true)
     private String username;
+    
     @Column(length = 32, nullable = false)
     private String password;
+    
     @Enumerated(EnumType.STRING)
     private EmployeeRole employeeRole;
 
@@ -51,6 +54,38 @@ public class Employee implements Serializable {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public EmployeeRole getemployeeRole() {
+        return employeeRole;
+    }
+
+    public void setEmployeeRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
     }
 
     @Override
@@ -78,44 +113,4 @@ public class Employee implements Serializable {
         return "entity.Employee[ id=" + employeeId + " ]";
     }
 
-    
-    public String getName() {
-        return name;
-    }
-
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    
-    public String getUsername() {
-        return username;
-    }
-
-   
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    
-    public String getPassword() {
-        return password;
-    }
-
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    
-    public EmployeeRole getemployeeRole() {
-        return employeeRole;
-    }
-
-    
-    public void setEmployeeRole(EmployeeRole employeeRole) {
-        this.employeeRole = employeeRole;
-    }
-    
 }

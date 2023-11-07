@@ -5,7 +5,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
 import javafx.util.Pair;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +16,7 @@ import javax.persistence.OneToOne;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class FlightRoute implements Serializable {
@@ -26,12 +25,16 @@ public class FlightRoute implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
+
     @Column(nullable = false, unique = true)
     private Pair<Airport, Airport> oriDestAirport;
+
     @Column(nullable = false)
     private boolean hasReturn;
+
     @Column(nullable = false)
     private boolean isDisabled;
+
     @OneToOne(mappedBy = "flightRoute")
     @JoinColumn(name = "flight_id", nullable = false)
     private Flight flights;
@@ -51,31 +54,6 @@ public class FlightRoute implements Serializable {
 
     public void setFlightRouteId(Long flightRouteId) {
         this.flightRouteId = flightRouteId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (flightRouteId != null ? flightRouteId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the flightRouteId fields are not set
-        if (!(object instanceof FlightRoute)) {
-            return false;
-        }
-        FlightRoute other = (FlightRoute) object;
-        if ((this.flightRouteId == null && other.flightRouteId != null) || (this.flightRouteId != null && !this.flightRouteId.equals(other.flightRouteId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.FlightRoute[ id=" + flightRouteId + " ]";
     }
 
     public Pair<Airport, Airport> getOriDestAirport() {
@@ -108,6 +86,31 @@ public class FlightRoute implements Serializable {
 
     public void setFlights(Flight flights) {
         this.flights = flights;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (flightRouteId != null ? flightRouteId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the flightRouteId fields are not set
+        if (!(object instanceof FlightRoute)) {
+            return false;
+        }
+        FlightRoute other = (FlightRoute) object;
+        if ((this.flightRouteId == null && other.flightRouteId != null) || (this.flightRouteId != null && !this.flightRouteId.equals(other.flightRouteId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.FlightRoute[ id=" + flightRouteId + " ]";
     }
 
 }

@@ -17,7 +17,7 @@ import javax.persistence.OneToMany;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class AircraftConfiguration implements Serializable {
@@ -26,18 +26,24 @@ public class AircraftConfiguration implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftConfigurationId;
+    
     @Column(length = 32, nullable = false, unique = true)
     private String name;
+    
     @Column(nullable = false)
     private Integer numOfCabinClass;
+    
     @Column(nullable = false)
     private Integer maxSeats;
+    
     @ManyToOne(optional = false)
     @JoinColumn(name = "flight_id")
     private Flight flight;
+    
     @OneToMany(mappedBy = "aircraftConfiguration")
     private List<CabinClass> cabinClasses;
-    @ManyToOne (optional = false)
+    
+    @ManyToOne(optional = false)
     @JoinColumn(name = "aircraft_id", nullable = false)
     private Aircraft aircraft;
 
@@ -49,38 +55,13 @@ public class AircraftConfiguration implements Serializable {
         this.numOfCabinClass = numOfCabinClass;
         this.maxSeats = maxSeats;
     }
-    
+
     public Long getAircraftConfigurationId() {
         return aircraftConfigurationId;
     }
 
     public void setAircraftConfigurationId(Long aircraftConfigurationId) {
         this.aircraftConfigurationId = aircraftConfigurationId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (aircraftConfigurationId != null ? aircraftConfigurationId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the aircraftConfigurationId fields are not set
-        if (!(object instanceof AircraftConfiguration)) {
-            return false;
-        }
-        AircraftConfiguration other = (AircraftConfiguration) object;
-        if ((this.aircraftConfigurationId == null && other.aircraftConfigurationId != null) || (this.aircraftConfigurationId != null && !this.aircraftConfigurationId.equals(other.aircraftConfigurationId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.AircraftConfiguration[ id=" + aircraftConfigurationId + " ]";
     }
 
     public String getName() {
@@ -130,5 +111,30 @@ public class AircraftConfiguration implements Serializable {
     public void setAircraft(Aircraft aircraft) {
         this.aircraft = aircraft;
     }
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (aircraftConfigurationId != null ? aircraftConfigurationId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the aircraftConfigurationId fields are not set
+        if (!(object instanceof AircraftConfiguration)) {
+            return false;
+        }
+        AircraftConfiguration other = (AircraftConfiguration) object;
+        if ((this.aircraftConfigurationId == null && other.aircraftConfigurationId != null) || (this.aircraftConfigurationId != null && !this.aircraftConfigurationId.equals(other.aircraftConfigurationId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.AircraftConfiguration[ id=" + aircraftConfigurationId + " ]";
+    }
+
 }
