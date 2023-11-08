@@ -33,15 +33,15 @@ public class FlightReservation implements Serializable {
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
-    @OneToMany
+    @OneToMany(mappedBy = "flightReservation")
     private List<Passenger> passengers;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private Customer customer;
 
-    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY, cascade = {})
-    private List<Flight> flights;
+    @ManyToMany(mappedBy = "flightReservations", cascade = {}, fetch = FetchType.LAZY)
+    private List<FlightSchedule> itinerary;
 
     public FlightReservation() {
     }
@@ -82,12 +82,12 @@ public class FlightReservation implements Serializable {
         this.customer = customer;
     }
 
-    public List<Flight> getFlights() {
-        return flights;
+    public List<FlightSchedule> getItinerary() {
+        return itinerary;
     }
 
-    public void setFlights(List<Flight> flights) {
-        this.flights = flights;
+    public void setItinerary(List<FlightSchedule> itinerary) {
+        this.itinerary = itinerary;
     }
 
     @Override

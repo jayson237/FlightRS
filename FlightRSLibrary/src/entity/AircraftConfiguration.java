@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -26,26 +28,24 @@ public class AircraftConfiguration implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftConfigurationId;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String name;
-    
+
     @Column(nullable = false)
+    @Min(1)
+    @Max(4)
     private Integer numOfCabinClass;
-    
+
     @Column(nullable = false)
     private Integer maxSeats;
-    
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "flight_id")
-    private Flight flight;
-    
-    @OneToMany(mappedBy = "aircraftConfiguration")
-    private List<CabinClass> cabinClasses;
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "aircraft_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Aircraft aircraft;
+
+    @OneToMany
+    private List<CabinClass> cabinClasses;
 
     public AircraftConfiguration() {
     }
@@ -86,14 +86,6 @@ public class AircraftConfiguration implements Serializable {
 
     public void setMaxSeats(Integer maxSeats) {
         this.maxSeats = maxSeats;
-    }
-
-    public Flight getFlights() {
-        return flight;
-    }
-
-    public void setFlights(Flight flights) {
-        this.flight = flight;
     }
 
     public List<CabinClass> getCabinClasses() {

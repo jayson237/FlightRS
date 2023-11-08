@@ -12,9 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 /**
  *
@@ -32,16 +32,14 @@ public class Flight implements Serializable {
     private String flightNumber;
 
     @Column(nullable = false)
-    private Boolean isDisabled;
+    private boolean isDisabled;
 
-    @ManyToMany(mappedBy = "flights", cascade = {}, fetch = FetchType.LAZY)
-    private List<FlightReservation> reservations;
-
-    @OneToOne(mappedBy = "flight")
-    private FlightSchedulePlan flightSchedulePlans;
-
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "flightRoute_id")
     private FlightRoute flightRoute;
+    
+    @OneToMany(mappedBy = "flight")
+    private List<FlightSchedulePlan> flightSchedulePlans;
 
     @OneToMany
     private AircraftConfiguration aircraftConfiguration;
@@ -49,7 +47,7 @@ public class Flight implements Serializable {
     public Flight() {
     }
 
-    public Flight(String flightNumber, Boolean isDisabled) {
+    public Flight(String flightNumber, boolean isDisabled) {
         this.flightNumber = flightNumber;
         this.isDisabled = isDisabled;
     }
@@ -70,28 +68,12 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
     }
 
-    public Boolean getIsDisabled() {
+    public boolean getIsDisabled() {
         return isDisabled;
     }
 
-    public void setIsDisabled(Boolean isDisabled) {
+    public void setIsDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
-    }
-
-    public List<FlightReservation> getReservations() {
-        return reservations;
-    }
-
-    public void setReservations(List<FlightReservation> reservations) {
-        this.reservations = reservations;
-    }
-
-    public FlightSchedulePlan getFlightSchedulePlans() {
-        return flightSchedulePlans;
-    }
-
-    public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
-        this.flightSchedulePlans = flightSchedulePlans;
     }
 
     public FlightRoute getFlightRoute() {
@@ -100,6 +82,14 @@ public class Flight implements Serializable {
 
     public void setFlightRoute(FlightRoute flightRoute) {
         this.flightRoute = flightRoute;
+    }
+
+    public List<FlightSchedulePlan> getFlightSchedulePlans() {
+        return flightSchedulePlans;
+    }
+
+    public void setFlightSchedulePlans(List<FlightSchedulePlan> flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
     }
 
     public AircraftConfiguration getAircraftConfiguration() {

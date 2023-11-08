@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,8 +13,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import util.enumeration.CabinClassType;
 
 /**
@@ -27,39 +29,52 @@ public class CabinClass implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
-    
+
     @Enumerated(EnumType.STRING)
     private CabinClassType type;
-    
+
     @Column(nullable = false)
+    @Min(0)
+    @Max(2)
     private Integer numberOfAisles;
-    
+
     @Column(nullable = false)
     private Integer numOfRows;
-    
+
     @Column(nullable = false)
     private Integer numOfSeatsAbreast;
-    
+
     @Column(nullable = false)
     private Integer maxCapacity;
-    
+
     @Column(nullable = false)
     private String seatingConfiguration;
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "aircraft_configuration_id", nullable = false)
-    private AircraftConfiguration aircraftConfiguration;
+
+    @Column(nullable = false)
+    private Integer reservedSeats;
+
+    @Column(nullable = false)
+    private Integer balanceSeats;
+
+    @Column(nullable = false)
+    private Integer availableSeats;
+
+    @OneToMany(mappedBy = "cabinClass")
+    private List<Fare> fares;
 
     public CabinClass() {
     }
 
-    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, Integer maxCapacity, String seatingConfiguration) {
+    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, Integer maxCapacity, String seatingConfiguration, Integer balanceSeats) {
         this.type = type;
         this.numberOfAisles = numberOfAisles;
         this.numOfRows = numOfRows;
         this.numOfSeatsAbreast = numOfSeatsAbreast;
         this.maxCapacity = maxCapacity;
         this.seatingConfiguration = seatingConfiguration;
+        this.reservedSeats = 0;
+        this.balanceSeats = balanceSeats;
+        this.availableSeats = maxCapacity - balanceSeats - reservedSeats;
     }
 
     public Long getCabinClassId() {
@@ -68,39 +83,6 @@ public class CabinClass implements Serializable {
 
     public void setCabinClassId(Long cabinClassId) {
         this.cabinClassId = cabinClassId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (cabinClassId != null ? cabinClassId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the cabinClassId fields are not set
-        if (!(object instanceof CabinClass)) {
-            return false;
-        }
-        CabinClass other = (CabinClass) object;
-        if ((this.cabinClassId == null && other.cabinClassId != null) || (this.cabinClassId != null && !this.cabinClassId.equals(other.cabinClassId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.CabinClass[ id=" + cabinClassId + " ]";
-    }
-
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
     }
 
     public CabinClassType getType() {
@@ -149,6 +131,63 @@ public class CabinClass implements Serializable {
 
     public void setSeatingConfiguration(String seatingConfiguration) {
         this.seatingConfiguration = seatingConfiguration;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (cabinClassId != null ? cabinClassId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the cabinClassId fields are not set
+        if (!(object instanceof CabinClass)) {
+            return false;
+        }
+        CabinClass other = (CabinClass) object;
+        if ((this.cabinClassId == null && other.cabinClassId != null) || (this.cabinClassId != null && !this.cabinClassId.equals(other.cabinClassId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.CabinClass[ id=" + cabinClassId + " ]";
+    }
+
+    public Integer getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(Integer availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    public Integer getReservedSeats() {
+        return reservedSeats;
+    }
+
+    public void setReservedSeats(Integer reservedSeats) {
+        this.reservedSeats = reservedSeats;
+    }
+
+    public Integer getBalanceSeats() {
+        return balanceSeats;
+    }
+
+    public void setBalanceSeats(Integer balanceSeats) {
+        this.balanceSeats = balanceSeats;
     }
 
 }

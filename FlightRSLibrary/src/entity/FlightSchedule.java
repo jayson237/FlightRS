@@ -6,13 +6,17 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -39,17 +43,27 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date arrivalDateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "flight_schedule_plan_id")
+    @Column(nullable = false)
+    private boolean isDisabled;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
+
+    @OneToMany
+    private List<CabinClass> cabinClasses;
+    
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    private List<FlightReservation> flightReservations;
 
     public FlightSchedule() {
     }
 
-    public FlightSchedule(Date departureDateTime, Integer estimatedDuration, Date arrivalDateTime) {
+    public FlightSchedule(Date departureDateTime, Integer estimatedMinutes, Date arrivalDateTime, boolean isDisabled) {
         this.departureDateTime = departureDateTime;
-        this.estimatedDuration = estimatedDuration;
-        this.arrivalDateTime = new Date(departureDateTime.getTime() + (estimatedDuration * 60 * 1000));
+        this.estimatedDuration = estimatedMinutes;
+        this.arrivalDateTime = new Date(departureDateTime.getTime() + (estimatedMinutes * 60 * 1000));
+        this.isDisabled = isDisabled;
     }
 
     public Long getFlightScheduleId() {
@@ -84,12 +98,36 @@ public class FlightSchedule implements Serializable {
         this.arrivalDateTime = arrivalDateTime;
     }
 
+    public boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
     public FlightSchedulePlan getFlightSchedulePlan() {
         return flightSchedulePlan;
     }
 
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public List<CabinClass> getCabinClasses() {
+        return cabinClasses;
+    }
+
+    public void setCabinClasses(List<CabinClass> cabinClasses) {
+        this.cabinClasses = cabinClasses;
+    }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
 
     @Override

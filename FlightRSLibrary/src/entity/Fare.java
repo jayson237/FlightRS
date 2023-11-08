@@ -8,12 +8,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import util.enumeration.CabinClassType;
 
@@ -28,19 +27,16 @@ public class Fare implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
-    
+
     @Column(nullable = false, length = 32, unique = true)
     private String code;
-    
+
     @Column(precision = 11, scale = 2)
     private BigDecimal amount;
-    
-    @Enumerated(EnumType.STRING)
-    private CabinClassType cabinClassType;
-    
-    @OneToOne 
-    @JoinColumn(name = "flight_reservation_id")
-    private FlightReservation flightReservation;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private CabinClass cabinclass;
 
     public Fare() {
     }
@@ -56,6 +52,30 @@ public class Fare implements Serializable {
 
     public void setFareId(Long fareId) {
         this.fareId = fareId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public CabinClass getCabinclass() {
+        return cabinclass;
+    }
+
+    public void setCabinclass(CabinClass cabinclass) {
+        this.cabinclass = cabinclass;
     }
 
     @Override
@@ -81,38 +101,6 @@ public class Fare implements Serializable {
     @Override
     public String toString() {
         return "entity.Fare[ id=" + fareId + " ]";
-    }
-
-    public FlightReservation getFlightReservation() {
-        return flightReservation;
-    }
-
-    public void setFlightReservation(FlightReservation flightReservation) {
-        this.flightReservation = flightReservation;
-    }
-
-    public CabinClassType getCabinClass() {
-        return cabinClassType;
-    }
-
-    public void setCabinClass(CabinClassType cabinClass) {
-        this.cabinClassType = cabinClass;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
 }

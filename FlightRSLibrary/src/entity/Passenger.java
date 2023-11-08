@@ -39,7 +39,7 @@ public class Passenger implements Serializable {
     private String passportNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "passenger_id")
+    @JoinColumn(nullable = false)   
     private FlightReservation flightReservation;
 
     public Passenger() {

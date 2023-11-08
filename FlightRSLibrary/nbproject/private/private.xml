@@ -4,12 +4,17 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/FlightSchedule.java</file>
-            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Passenger.java</file>
-            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/FlightRoute.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Aircraft.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/CabinClass.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Airport.java</file>
             <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/FlightSchedulePlan.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/FlightRoute.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Customer.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Employee.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/AircraftConfiguration.java</file>
             <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/FlightReservation.java</file>
             <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Flight.java</file>
-            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Partner.java</file>
+            <file>file:/D:/Java/NetBeansProjects/IS2103/FlightRS/FlightRSLibrary/src/entity/Fare.java</file>
         </group>
     </open-files>
 </project-private>

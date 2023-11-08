@@ -5,20 +5,28 @@
 package entity;
 
 import java.io.Serializable;
-import javafx.util.Pair;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
  * @author jayso
  */
 @Entity
+@Table(
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"originAirport_id", "destinationAirport_id"})
+        }
+)
 public class FlightRoute implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,25 +34,28 @@ public class FlightRoute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
 
-    @Column(nullable = false, unique = true)
-    private Pair<Airport, Airport> oriDestAirport;
-
     @Column(nullable = false)
-    private boolean hasReturn;
+    private boolean hasReturnFlight;
 
     @Column(nullable = false)
     private boolean isDisabled;
 
-    @OneToOne(mappedBy = "flightRoute")
-    @JoinColumn(name = "flight_id", nullable = false)
-    private Flight flights;
+    @OneToMany(mappedBy = "flightRoute")
+    private List<Flight> flights;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "originAirport_id", nullable = false)
+    private Airport originAirport;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "destinationAirport_id", nullable = false)
+    private Airport destinationAirport;
 
     public FlightRoute() {
     }
 
-    public FlightRoute(Pair<Airport, Airport> oriDestAirport, boolean hasReturn, boolean isDisabled) {
-        this.oriDestAirport = oriDestAirport;
-        this.hasReturn = hasReturn;
+    public FlightRoute(boolean hasReturnFlight, boolean isDisabled) {
+        this.hasReturnFlight = hasReturnFlight;
         this.isDisabled = isDisabled;
     }
 
@@ -56,20 +67,12 @@ public class FlightRoute implements Serializable {
         this.flightRouteId = flightRouteId;
     }
 
-    public Pair<Airport, Airport> getOriDestAirport() {
-        return oriDestAirport;
+    public boolean isHasReturnFlight() {
+        return hasReturnFlight;
     }
 
-    public void setOriDestAirport(Pair<Airport, Airport> oriDestAirport) {
-        this.oriDestAirport = oriDestAirport;
-    }
-
-    public boolean isHasReturn() {
-        return hasReturn;
-    }
-
-    public void setHasReturn(boolean hasReturn) {
-        this.hasReturn = hasReturn;
+    public void setHasReturnFlight(boolean hasReturnFlight) {
+        this.hasReturnFlight = hasReturnFlight;
     }
 
     public boolean isIsDisabled() {
@@ -80,12 +83,28 @@ public class FlightRoute implements Serializable {
         this.isDisabled = isDisabled;
     }
 
-    public Flight getFlights() {
+    public List<Flight> getFlights() {
         return flights;
     }
 
-    public void setFlights(Flight flights) {
+    public void setFlights(List<Flight> flights) {
         this.flights = flights;
+    }
+
+    public Airport getOriginAirport() {
+        return originAirport;
+    }
+
+    public void setOriginAirport(Airport originAirport) {
+        this.originAirport = originAirport;
+    }
+
+    public Airport getDestinationAirport() {
+        return destinationAirport;
+    }
+
+    public void setDestinationAirport(Airport destinationAirport) {
+        this.destinationAirport = destinationAirport;
     }
 
     @Override

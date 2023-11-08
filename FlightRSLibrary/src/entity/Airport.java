@@ -22,16 +22,16 @@ public class Airport implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(length = 64, nullable = false, unique = true)
     private String airportName;
-    
+
     @Column(length = 64, nullable = false, unique = true)
     private String airportCode;
-    
+
     @Column(length = 64, nullable = false)
     private String stateProvince;
-    
+
     @Column(length = 64, nullable = false)
     private String country;
 
