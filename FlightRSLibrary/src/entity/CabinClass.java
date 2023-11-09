@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import util.enumeration.CabinClassType;
@@ -59,7 +60,13 @@ public class CabinClass implements Serializable {
     @Column(nullable = false)
     private Integer availableSeats;
 
+    @OneToOne
+    private FlightSchedule flightSchedule;
+
     @OneToMany(mappedBy = "cabinClass")
+    private List<Seat> seats;
+
+    @OneToMany
     private List<Fare> fares;
 
     public CabinClass() {
@@ -131,6 +138,22 @@ public class CabinClass implements Serializable {
 
     public void setSeatingConfiguration(String seatingConfiguration) {
         this.seatingConfiguration = seatingConfiguration;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 
     public List<Fare> getFares() {

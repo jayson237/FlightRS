@@ -11,10 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import util.enumeration.CabinClassType;
 
 /**
  *
@@ -34,9 +30,9 @@ public class Fare implements Serializable {
     @Column(precision = 11, scale = 2)
     private BigDecimal amount;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private CabinClass cabinclass;
+//    @ManyToOne(optional = false)
+//    @JoinColumn(nullable = false)
+//    private CabinClass cabinClass;
 
     public Fare() {
     }
@@ -70,13 +66,13 @@ public class Fare implements Serializable {
         this.amount = amount;
     }
 
-    public CabinClass getCabinclass() {
-        return cabinclass;
-    }
-
-    public void setCabinclass(CabinClass cabinclass) {
-        this.cabinclass = cabinclass;
-    }
+//    public CabinClass getCabinclass() {
+//        return cabinClass;
+//    }
+//
+//    public void setCabinclass(CabinClass cabinClass) {
+//        this.cabinClass = cabinClass;
+//    }
 
     @Override
     public int hashCode() {

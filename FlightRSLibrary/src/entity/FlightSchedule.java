@@ -52,7 +52,7 @@ public class FlightSchedule implements Serializable {
 
     @OneToMany
     private List<CabinClass> cabinClasses;
-    
+
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
     private List<FlightReservation> flightReservations;
 

@@ -53,9 +53,6 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
 
-    @OneToMany
-    private List<Fare> fares;
-
     public FlightSchedulePlan() {
     }
 
@@ -120,14 +117,6 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
         this.flightSchedules = flightSchedules;
-    }
-
-    public List<Fare> getFares() {
-        return fares;
-    }
-
-    public void setFares(List<Fare> fares) {
-        this.fares = fares;
     }
 
     @Override

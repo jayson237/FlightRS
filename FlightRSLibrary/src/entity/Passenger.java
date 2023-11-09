@@ -32,23 +32,20 @@ public class Passenger implements Serializable {
     @Column(length = 32, nullable = false)
     private String lastName;
 
-    @Column(nullable = false)
-    private String seatNumber;
-
     @Column(length = 32, nullable = false, unique = true)
     private String passportNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(nullable = false)   
+    @JoinColumn(nullable = false)
     private FlightReservation flightReservation;
 
     public Passenger() {
     }
 
-    public Passenger(String firstName, String lastName, String sitNumber, String passportNumber) {
+    public Passenger(String firstName, String lastName, String passportNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.seatNumber = sitNumber;
+
         this.passportNumber = passportNumber;
     }
 
@@ -74,14 +71,6 @@ public class Passenger implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getSeatNumber() {
-        return seatNumber;
-    }
-
-    public void setSeatNumber(String seatNumber) {
-        this.seatNumber = seatNumber;
     }
 
     public String getPassportNumber() {

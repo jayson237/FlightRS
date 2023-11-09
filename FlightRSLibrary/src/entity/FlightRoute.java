@@ -44,11 +44,11 @@ public class FlightRoute implements Serializable {
     private List<Flight> flights;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "originAirport_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Airport originAirport;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "destinationAirport_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Airport destinationAirport;
 
     public FlightRoute() {
