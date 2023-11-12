@@ -32,16 +32,23 @@ public class FlightSchedulePlan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
+    
+    @Column (nullable = false, length = 32)
+    private String flightNumber;
 
     @Enumerated(EnumType.STRING)
     private FlightScheduleType type;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
+    private Date startDate;
+
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
     private Date recurrentEndDate;
 
     @Column(nullable = false)
-    private Integer layOverDuration;
+    private Integer layOverHourlyDuration;
 
     @Column(nullable = false)
     private boolean isDisabled;
@@ -56,10 +63,11 @@ public class FlightSchedulePlan implements Serializable {
     public FlightSchedulePlan() {
     }
 
-    public FlightSchedulePlan(FlightScheduleType type, Date recurrentEndDate, Integer layOverDuration, boolean isDisabled) {
+    public FlightSchedulePlan(FlightScheduleType type, Date startDate, Date recurrentEndDate, Integer layOverDuration, boolean isDisabled) {
         this.type = type;
+        this.startDate = startDate;
         this.recurrentEndDate = recurrentEndDate;
-        this.layOverDuration = layOverDuration;
+        this.layOverHourlyDuration = layOverDuration;
         this.isDisabled = isDisabled;
     }
 
@@ -87,6 +95,14 @@ public class FlightSchedulePlan implements Serializable {
         this.isDisabled = isDisabled;
     }
 
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
     public Date getRecurrentEndDate() {
         return recurrentEndDate;
     }
@@ -95,12 +111,12 @@ public class FlightSchedulePlan implements Serializable {
         this.recurrentEndDate = recurrentEndDate;
     }
 
-    public Integer getLayOverDuration() {
-        return layOverDuration;
+    public Integer getLayOverHourlyDuration() {
+        return layOverHourlyDuration;
     }
 
-    public void setLayOverDuration(Integer layOverDuration) {
-        this.layOverDuration = layOverDuration;
+    public void setLayOverHourlyDuration(Integer layOverHourlyDuration) {
+        this.layOverHourlyDuration = layOverHourlyDuration;
     }
 
     public Flight getFlight() {

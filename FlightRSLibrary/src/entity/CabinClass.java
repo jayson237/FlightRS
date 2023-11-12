@@ -46,16 +46,13 @@ public class CabinClass implements Serializable {
     private Integer numOfSeatsAbreast;
 
     @Column(nullable = false)
-    private Integer maxCapacity;
-
-    @Column(nullable = false)
     private String seatingConfiguration;
 
     @Column(nullable = false)
-    private Integer reservedSeats;
+    private Integer maxCapacity;
 
     @Column(nullable = false)
-    private Integer balanceSeats;
+    private Integer reservedSeats;
 
     @Column(nullable = false)
     private Integer availableSeats;
@@ -72,7 +69,7 @@ public class CabinClass implements Serializable {
     public CabinClass() {
     }
 
-    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, Integer maxCapacity, String seatingConfiguration, Integer balanceSeats) {
+    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, String seatingConfiguration, Integer maxCapacity) {
         this.type = type;
         this.numberOfAisles = numberOfAisles;
         this.numOfRows = numOfRows;
@@ -80,8 +77,7 @@ public class CabinClass implements Serializable {
         this.maxCapacity = maxCapacity;
         this.seatingConfiguration = seatingConfiguration;
         this.reservedSeats = 0;
-        this.balanceSeats = balanceSeats;
-        this.availableSeats = maxCapacity - balanceSeats - reservedSeats;
+        this.availableSeats = maxCapacity - reservedSeats;
     }
 
     public Long getCabinClassId() {
@@ -140,6 +136,22 @@ public class CabinClass implements Serializable {
         this.seatingConfiguration = seatingConfiguration;
     }
 
+    public Integer getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(Integer availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    public Integer getReservedSeats() {
+        return reservedSeats;
+    }
+
+    public void setReservedSeats(Integer reservedSeats) {
+        this.reservedSeats = reservedSeats;
+    }
+
     public FlightSchedule getFlightSchedule() {
         return flightSchedule;
     }
@@ -187,30 +199,6 @@ public class CabinClass implements Serializable {
     @Override
     public String toString() {
         return "entity.CabinClass[ id=" + cabinClassId + " ]";
-    }
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public Integer getReservedSeats() {
-        return reservedSeats;
-    }
-
-    public void setReservedSeats(Integer reservedSeats) {
-        this.reservedSeats = reservedSeats;
-    }
-
-    public Integer getBalanceSeats() {
-        return balanceSeats;
-    }
-
-    public void setBalanceSeats(Integer balanceSeats) {
-        this.balanceSeats = balanceSeats;
     }
 
 }

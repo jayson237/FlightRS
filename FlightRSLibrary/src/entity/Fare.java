@@ -24,21 +24,16 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
 
-    @Column(nullable = false, length = 32, unique = true)
-    private String code;
-
     @Column(precision = 11, scale = 2)
     private BigDecimal amount;
 
 //    @ManyToOne(optional = false)
 //    @JoinColumn(nullable = false)
 //    private CabinClass cabinClass;
-
     public Fare() {
     }
 
-    public Fare(String code, BigDecimal amount) {
-        this.code = code;
+    public Fare(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -48,14 +43,6 @@ public class Fare implements Serializable {
 
     public void setFareId(Long fareId) {
         this.fareId = fareId;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public BigDecimal getAmount() {
@@ -73,7 +60,6 @@ public class Fare implements Serializable {
 //    public void setCabinclass(CabinClass cabinClass) {
 //        this.cabinClass = cabinClass;
 //    }
-
     @Override
     public int hashCode() {
         int hash = 0;

@@ -1,1 +1,8 @@
 /FlightRSLibrary/build/
+/FRSManagementClient/nbproject/private/
+/FRSManagementClient/dist/
+/FRSManagementClient/build/
+/FlightRSLibrary/dist/
+/FlightRS-ejb/build/
+/FlightRS-ejb/dist/
+/dist/
