@@ -32,22 +32,22 @@ public class FlightSchedulePlan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
-    
-    @Column (nullable = false, length = 32)
+
+    @Column(nullable = false, length = 32)
     private String flightNumber;
 
     @Enumerated(EnumType.STRING)
     private FlightScheduleType type;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
+    @Column
     private Date startDate;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
+    @Column
     private Date recurrentEndDate;
 
-    @Column(nullable = false)
+    @Column
     private Integer layOverHourlyDuration;
 
     @Column(nullable = false)
@@ -63,7 +63,8 @@ public class FlightSchedulePlan implements Serializable {
     public FlightSchedulePlan() {
     }
 
-    public FlightSchedulePlan(FlightScheduleType type, Date startDate, Date recurrentEndDate, Integer layOverDuration, boolean isDisabled) {
+    public FlightSchedulePlan(String flightNumber, FlightScheduleType type, Date startDate, Date recurrentEndDate, Integer layOverDuration, boolean isDisabled) {
+        this.flightNumber = flightNumber;
         this.type = type;
         this.startDate = startDate;
         this.recurrentEndDate = recurrentEndDate;
@@ -77,6 +78,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedulePlanId(Long flightSchedulePlanId) {
         this.flightSchedulePlanId = flightSchedulePlanId;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
 
     public FlightScheduleType getType() {

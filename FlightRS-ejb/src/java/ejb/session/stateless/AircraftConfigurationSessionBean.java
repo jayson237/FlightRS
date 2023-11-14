@@ -7,7 +7,6 @@ package ejb.session.stateless;
 import entity.Aircraft;
 import entity.AircraftConfiguration;
 import entity.CabinClass;
-import entity.Customer;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -23,6 +22,7 @@ import javax.validation.ValidatorFactory;
 import util.exception.AircraftConfigurationExistException;
 import util.exception.AircraftConfigurationNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
+import util.exception.CabinClassExistException;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
 
@@ -36,6 +36,9 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     @EJB
     private AircraftSessionBeanLocal aircraftSessionBean;
 
+    @EJB
+    private CabinClassSessionBeanLocal cabinClassSessionBean;
+
     @PersistenceContext(unitName = "FlightRS-ejbPU")
     private EntityManager em;
 
@@ -48,18 +51,23 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     }
 
     @Override
-    public AircraftConfiguration createNewAircraftConfig(String aircraftType, AircraftConfiguration config, List<CabinClass> cabinClasses) throws AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException {
+    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException {
         Set<ConstraintViolation<AircraftConfiguration>> constraintViolations = validator.validate(config);
         if (constraintViolations.isEmpty()) {
             try {
-                Aircraft a = aircraftSessionBean.retrieveAircraftByType(aircraftType);
-                em.persist(config);
-                config.setAircraft(a);
-                config.setCabinClasses(cabinClasses);
-                em.flush();
-                return config;
-            } catch (AircraftTypeNotFoundException e) {
-                throw new AircraftTypeNotFoundException("There is no such aircraft under Merlion Airlines");
+                String type = config.getName().split(" ")[0] + " " + config.getName().split(" ")[1];
+                Aircraft a = aircraftSessionBean.retrieveAircraftByType(type);
+                if (a.getMaxCapacity() >= config.getMaxSeats()) {
+                    em.persist(config);
+                    config.setAircraft(a);
+                    for (CabinClass cc : cabinClasses) {
+                        cabinClassSessionBean.createNewCabinClass(cc);
+                    }
+                    config.setCabinClasses(cabinClasses);
+                    em.flush();
+                }
+            } catch (AircraftTypeNotFoundException ex) {
+                throw new AircraftTypeNotFoundException("Aircraft type does not exist");
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
@@ -72,6 +80,7 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+        return config;
     }
 
     @Override
@@ -88,6 +97,18 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
             return config;
         }
         throw new AircraftConfigurationNotFoundException("Air configuration with id: " + aircraftConfigId + " does not exist");
+    }
+
+    @Override
+    public AircraftConfiguration retrieveAirConfigByName(String aircraftConfig) throws AircraftConfigurationNotFoundException {
+        Query q = em.createQuery("SELECT ac FROM AircraftConfiguration ac WHERE ac.name = :configName");
+        q.setParameter("configName", aircraftConfig);
+        AircraftConfiguration config = (AircraftConfiguration) q.getSingleResult();
+        if (config != null) {
+            
+            return config;
+        }
+        throw new AircraftConfigurationNotFoundException("Air configuration with name: " + aircraftConfig + " does not exist");
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<AircraftConfiguration>> constraintViolations) {

@@ -16,4 +16,5 @@ import util.exception.AircraftTypeNotFoundException;
 public interface AircraftSessionBeanLocal {
 
     public Aircraft retrieveAircraftByType(String aircraftType) throws AircraftTypeNotFoundException;
+
 }

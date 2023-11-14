@@ -24,8 +24,6 @@ import util.exception.UpdateFlightException;
 @Remote
 public interface FlightSessionBeanRemote {
 
-    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, Long aircraftConfigurationId) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException;
-
     public List<Flight> retrieveAllFlights();
 
     public Flight retrieveFlightById(Long flightId) throws FlightNotFoundException;
@@ -33,5 +31,9 @@ public interface FlightSessionBeanRemote {
     public boolean updateFlight(Flight flight) throws FlightNotFoundException, UpdateFlightException, InputDataValidationException;
 
     public boolean deleteFlight(Long flightId) throws FlightNotFoundException, DeleteFlightException;
+
+    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, String aircraftConfig) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException;
+
+    public Flight retrieveFlightByNumber(String flightNum) throws FlightNotFoundException;
 
 }

@@ -8,6 +8,7 @@ import entity.FlightSchedulePlan;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.FlightNotFoundException;
+import util.exception.FlightSchedulePlanNotFoundException;
 
 /**
  *
@@ -16,6 +17,8 @@ import util.exception.FlightNotFoundException;
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
 
-    public List<FlightSchedulePlan> retrieveFlightScheduleByFlightId(Long flightId) throws FlightNotFoundException;
+    public List<FlightSchedulePlan> retrieveFlightSchedulePlanByFlightId(Long flightId) throws FlightNotFoundException;
+
+    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException;
     
 }

@@ -48,7 +48,8 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
         throw new EmployeeNotFoundException("Employee with the id: " + employeeId + " does not exist\n");
     }
 
-    private Employee retrieveEmployeeByEmail(String email) throws EmployeeNotFoundException {
+    @Override
+    public Employee retrieveEmployeeByEmail(String email) throws EmployeeNotFoundException {
         Query q = em.createQuery("SELECT e FROM Employee e WHERE e.email = :email");
         q.setParameter("email", email);
         Employee e = (Employee) q.getSingleResult();

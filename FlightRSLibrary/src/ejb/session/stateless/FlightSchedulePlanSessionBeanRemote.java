@@ -4,7 +4,17 @@
  */
 package ejb.session.stateless;
 
+import entity.CabinClass;
+import entity.FlightSchedule;
+import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.FlightNotFoundException;
+import util.exception.FlightScheduleExistException;
+import util.exception.FlightSchedulePlanExistException;
+import util.exception.FlightSchedulePlanNotFoundException;
+import util.exception.GeneralException;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -12,5 +22,8 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
-    
+
+    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException;
+
+    public FlightSchedulePlan createNewFlightSchedulePlan(List<FlightSchedule> flightSchedules, FlightSchedulePlan plan, Long flightId) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, FlightScheduleExistException, FlightSchedulePlanExistException, InputDataValidationException, GeneralException;
 }

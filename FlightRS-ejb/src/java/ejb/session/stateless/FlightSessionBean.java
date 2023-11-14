@@ -63,16 +63,16 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     }
 
     @Override
-    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, Long aircraftConfigurationId) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException {
+    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, String aircraftConfig) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException {
         Set<ConstraintViolation<Flight>> constraintViolations = validator.validate(flight);
         if (constraintViolations.isEmpty()) {
             try {
                 Airport origin = airportSessionBean.retrieveAirportByCode(originAirport);
                 Airport destination = airportSessionBean.retrieveAirportByCode(destinationAirport);
                 FlightRoute flightRoute = flightRouteSessionBean.retrieveflightRouteByAirport(origin, destination);
-                AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAirConfigById(aircraftConfigurationId);
+                AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAirConfigByName(aircraftConfig);
                 em.persist(flight);
-                flight.getAircraftConfiguration().add(config);
+                flight.setAircraftConfiguration(config);
                 flight.setFlightRoute(flightRoute);
                 em.flush();
                 return flight;
@@ -81,7 +81,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             } catch (AirportNotFoundException ex) {
                 throw new AirportNotFoundException("Either one or both airport codes does/do not exist");
             } catch (AircraftConfigurationNotFoundException ex) {
-                throw new AircraftConfigurationNotFoundException("Aircraft Configuration id: " + aircraftConfigurationId + " does not exist");
+                throw new AircraftConfigurationNotFoundException("Aircraft Configuration name: " + aircraftConfig + " does not exist");
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
@@ -138,6 +138,17 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     }
 
     @Override
+    public Flight retrieveFlightByNumber(String flightNum) throws FlightNotFoundException {
+        Query q = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :number");
+        q.setParameter("number", flightNum);
+        Flight flight = (Flight) q.getSingleResult();
+        if (flight != null) {
+            return flight;
+        }
+        throw new FlightNotFoundException("Flight with number: " + flightNum + " does not exist");
+    }
+
+    @Override
     public boolean updateFlight(Flight flight) throws FlightNotFoundException, UpdateFlightException, InputDataValidationException {
         if (flight != null && flight.getFlightId() != null) {
             Set<ConstraintViolation<Flight>> constraintViolations = validator.validate(flight);
@@ -166,7 +177,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
         FlightRoute flightRoute = flightRouteSessionBean.retrieveFlightRouteByFlightId(flightId);
 
-        List<FlightSchedulePlan> schedulePlan = flightSchedulePlanSessionBean.retrieveFlightScheduleByFlightId(flightId);
+        List<FlightSchedulePlan> schedulePlan = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanByFlightId(flightId);
 
         if (flightRoute == null && schedulePlan.isEmpty()) {
             em.remove(flightToRemove);

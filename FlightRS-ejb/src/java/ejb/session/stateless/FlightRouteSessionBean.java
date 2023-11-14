@@ -140,8 +140,8 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     public FlightRoute retrieveFlightRouteByFlightId(Long flightId) throws FlightNotFoundException {
         Flight flight = flightSessionBean.retrieveFlightById(flightId);
         if (flight != null) {
-            Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.flights.flightId = :flight");
-            q.setParameter("flight", flightId);
+            Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr = :flight");
+            q.setParameter("flight", flight.getFlightRoute());
             return (FlightRoute) q.getSingleResult();
         }
         throw new FlightNotFoundException("Flight id: " + flightId + " cannot be deleted because it does not exist");

@@ -15,7 +15,9 @@ import util.exception.InvalidLoginException;
  */
 @Remote
 public interface EmployeeSessionBeanRemote {
-    
+
     public boolean checkEmployeeCredentials(String email, String password) throws EmployeeNotFoundException, InvalidLoginException;
+
+    public Employee retrieveEmployeeByEmail(String email) throws EmployeeNotFoundException;
 
 }

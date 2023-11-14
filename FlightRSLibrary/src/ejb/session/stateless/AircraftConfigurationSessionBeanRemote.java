@@ -11,6 +11,7 @@ import javax.ejb.Remote;
 import util.exception.AircraftConfigurationExistException;
 import util.exception.AircraftConfigurationNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
+import util.exception.CabinClassExistException;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
 
@@ -21,7 +22,7 @@ import util.exception.InputDataValidationException;
 @Remote
 public interface AircraftConfigurationSessionBeanRemote {
 
-    public AircraftConfiguration createNewAircraftConfig(String aircraftType, AircraftConfiguration config, List<CabinClass> cabinClasses) throws AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException;
+    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException;
 
     public List<AircraftConfiguration> retrieveAllAirConfigurations();
 

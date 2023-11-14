@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,11 +42,11 @@ public class AircraftConfiguration implements Serializable {
     @Column(nullable = false)
     private Integer maxSeats;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(nullable = false)
     private Aircraft aircraft;
 
-    @OneToMany (cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
     private List<CabinClass> cabinClasses;
 
     public AircraftConfiguration() {
@@ -89,20 +90,20 @@ public class AircraftConfiguration implements Serializable {
         this.maxSeats = maxSeats;
     }
 
-    public List<CabinClass> getCabinClasses() {
-        return cabinClasses;
-    }
-
-    public void setCabinClasses(List<CabinClass> cabinClasses) {
-        this.cabinClasses = cabinClasses;
-    }
-
     public Aircraft getAircraft() {
         return aircraft;
     }
 
     public void setAircraft(Aircraft aircraft) {
         this.aircraft = aircraft;
+    }
+
+    public List<CabinClass> getCabinClasses() {
+        return cabinClasses;
+    }
+
+    public void setCabinClasses(List<CabinClass> cabinClasses) {
+        this.cabinClasses = cabinClasses;
     }
 
     @Override

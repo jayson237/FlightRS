@@ -27,38 +27,34 @@ public class Customer implements Serializable {
 
     @Column(length = 32, nullable = false)
     private String firstName;
-    
+
     @Column(length = 32, nullable = false)
     private String lastName;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String email;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String mobileNumber;
-    
+
     @Column(length = 32, nullable = false)
     private String address;
-    
-    @Column(length = 32, nullable = false, unique = true)
-    private String username;
-    
+
     @Column(length = 32, nullable = false)
     private String password;
-    
+
     @OneToMany(mappedBy = "customer")
     private List<FlightReservation> flightReservations;
 
     public Customer() {
     }
 
-    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
+    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.mobileNumber = mobileNumber;
         this.address = address;
-        this.username = username;
         this.password = password;
     }
 
@@ -108,14 +104,6 @@ public class Customer implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {

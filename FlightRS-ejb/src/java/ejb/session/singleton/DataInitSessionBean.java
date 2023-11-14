@@ -48,18 +48,19 @@ public class DataInitSessionBean {
     }
 
     private void initEmployee() {
-        Employee employee = new Employee("Fleet Manager", "salesmanager@mlair.com.sg", "password", EmployeeRole.SALESMANAGER);
+        Employee employee = new Employee("Fleet Manager", "fleetmanager@mlair.com.sg", "password", EmployeeRole.FLEETMANAGER);
         em.persist(employee);
         em.flush();
-        employee = new Employee("Schedule Manager", "schedulemanager@gmail.com", "password", EmployeeRole.SCHEDULEMANAGER);
+        employee = new Employee("Route Planner", "routeplanner@mlair.com.sg", "password", EmployeeRole.ROUTEPLANNER);
         em.persist(employee);
         em.flush();
-        employee = new Employee("Fleet Manager", "fleetmanager@mlair.com", "password", EmployeeRole.FLEETMANAGER);
+        employee = new Employee("Schedule Manager", "schedulemanager@mlair.com.sg", "password", EmployeeRole.SCHEDULEMANAGER);
         em.persist(employee);
         em.flush();
-        employee = new Employee("Route Planner", "routeplanner@mlair.com", "password", EmployeeRole.ROUTEPLANNER);
+        employee = new Employee("Sales Manager", "salesmanager@mlair.com.sg", "password", EmployeeRole.SALESMANAGER);
         em.persist(employee);
         em.flush();
+
     }
 
     private void initPartner() {
@@ -222,7 +223,11 @@ public class DataInitSessionBean {
 
     private void initAircraft() {
         Aircraft aircraft = new Aircraft("Boeing 737", 200);
+        em.persist(aircraft);
+        em.flush();
         aircraft = new Aircraft("Boeing 747", 400);
+        em.persist(aircraft);
+        em.flush();
     }
 
 }

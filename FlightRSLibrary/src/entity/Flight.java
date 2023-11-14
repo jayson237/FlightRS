@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,15 +33,16 @@ public class Flight implements Serializable {
     @Column(nullable = false)
     private boolean isDisabled;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
 
     @OneToMany(mappedBy = "flight")
     private List<FlightSchedulePlan> flightSchedulePlans;
 
-    @OneToMany (fetch = FetchType.LAZY)
-    private List<AircraftConfiguration> aircraftConfigurations;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private AircraftConfiguration aircraftConfiguration;
 
     public Flight() {
     }
@@ -92,12 +92,12 @@ public class Flight implements Serializable {
         this.flightSchedulePlans = flightSchedulePlans;
     }
 
-    public List<AircraftConfiguration> getAircraftConfiguration() {
-        return aircraftConfigurations;
+    public AircraftConfiguration getAircraftConfiguration() {
+        return aircraftConfiguration;
     }
 
-    public void setAircraftConfigurations(List<AircraftConfiguration> aircraftConfigurations) {
-        this.aircraftConfigurations = aircraftConfigurations;
+    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
+        this.aircraftConfiguration = aircraftConfiguration;
     }
 
     @Override
