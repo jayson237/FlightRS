@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Fare;
 import entity.Flight;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
@@ -34,6 +35,9 @@ import util.exception.InputDataValidationException;
 public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionBeanRemote, FlightSchedulePlanSessionBeanLocal {
 
     @EJB
+    private FareSessionBeanLocal fareSessionBean;
+
+    @EJB
     private FlightScheduleSessionBeanLocal flightScheduleSessionBean;
 
     @EJB
@@ -51,15 +55,25 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     @Override
-    public FlightSchedulePlan createNewFlightSchedulePlan(List<FlightSchedule> flightSchedules, FlightSchedulePlan plan, Long flightId) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, FlightScheduleExistException, FlightSchedulePlanExistException, InputDataValidationException, GeneralException {
+    public FlightSchedulePlan createNewFlightSchedulePlan(List<FlightSchedule> flightSchedules, FlightSchedulePlan plan, Long flightId, List<Fare> fares) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, FlightScheduleExistException, FlightSchedulePlanExistException, InputDataValidationException, GeneralException {
         Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(plan);
         if (constraintViolations.isEmpty()) {
             try {
                 Flight flight = flightSessionBean.retrieveFlightById(flightId);
-                for (FlightSchedule schedule : flightSchedules) {
-                    flightScheduleSessionBean.createFlightSchedules(schedule, flightId);
-                }
                 em.persist(plan);
+                for (FlightSchedule schedule : flightSchedules) {
+                    FlightSchedule fsResult = flightScheduleSessionBean.createFlightSchedules(schedule, plan.getFlightSchedulePlanId());
+                    schedule.setFlightSchedulePlan(plan);
+                    plan.getFlightSchedules().add(fsResult);
+                }
+                for (int i = 0; i < plan.getFlightSchedules().size(); i++) {
+                    for (int j = 0; j < fares.size(); j++) {
+                        Fare fare = fares.get(j);
+                        fare.setCabinclass(plan.getFlightSchedules().get(i).getCabinClasses().get(j));
+                        fareSessionBean.createNewFare(fares.get(j));
+                        plan.getFlightSchedules().get(i).getCabinClasses().get(j).getFares().add(fare);
+                    }
+                }
                 plan.setFlight(flight);
                 flight.getFlightSchedulePlans().add(plan);
                 em.flush();

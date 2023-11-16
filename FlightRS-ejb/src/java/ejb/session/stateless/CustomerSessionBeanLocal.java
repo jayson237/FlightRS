@@ -15,7 +15,9 @@ import util.exception.CustomerNotFoundException;
 @Local
 public interface CustomerSessionBeanLocal {
 
-    public Customer retrieveCustomerById(Long employeeId) throws CustomerNotFoundException;
+    public Customer retrieveCustomerById(Long customerId) throws CustomerNotFoundException;
+
+   
 
     
     

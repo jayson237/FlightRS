@@ -51,20 +51,11 @@ public class CabinClass implements Serializable {
     @Column(nullable = false)
     private Integer maxCapacity;
 
-    @Column(nullable = false)
-    private Integer reservedSeats;
-
-    @Column(nullable = false)
-    private Integer availableSeats;
-
-    @OneToOne
-    private FlightSchedule flightSchedule;
-
     @OneToMany(mappedBy = "cabinClass")
-    private List<Seat> seats;
-
-    @OneToMany
     private List<Fare> fares;
+
+    @OneToOne(optional = false)
+    private SeatInventory inventory;
 
     public CabinClass() {
     }
@@ -76,8 +67,6 @@ public class CabinClass implements Serializable {
         this.numOfSeatsAbreast = numOfSeatsAbreast;
         this.maxCapacity = maxCapacity;
         this.seatingConfiguration = seatingConfiguration;
-        this.reservedSeats = 0;
-        this.availableSeats = maxCapacity - reservedSeats;
     }
 
     public Long getCabinClassId() {
@@ -136,44 +125,20 @@ public class CabinClass implements Serializable {
         this.seatingConfiguration = seatingConfiguration;
     }
 
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public Integer getReservedSeats() {
-        return reservedSeats;
-    }
-
-    public void setReservedSeats(Integer reservedSeats) {
-        this.reservedSeats = reservedSeats;
-    }
-
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
-    }
-
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
-    }
-
-    public List<Seat> getSeats() {
-        return seats;
-    }
-
-    public void setSeats(List<Seat> seats) {
-        this.seats = seats;
-    }
-
     public List<Fare> getFares() {
         return fares;
     }
 
     public void setFares(List<Fare> fares) {
         this.fares = fares;
+    }
+
+    public SeatInventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(SeatInventory inventory) {
+        this.inventory = inventory;
     }
 
     @Override

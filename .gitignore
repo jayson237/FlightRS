@@ -6,3 +6,6 @@
 /FlightRS-ejb/build/
 /FlightRS-ejb/dist/
 /dist/
+/FRSReservationClient/nbproject/private/
+/FRSReservationClient/dist/
+/FRSReservationClient/build/

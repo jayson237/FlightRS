@@ -8,6 +8,7 @@ import entity.Customer;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -40,17 +41,18 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
     }
 
     @Override
-    public void registerCustomer(Customer customer) throws CustomerExistException, GeneralException, InputDataValidationException {
+    public Customer registerCustomer(Customer customer) throws CustomerExistException, GeneralException, InputDataValidationException {
         Set<ConstraintViolation<Customer>> constraintViolations = validator.validate(customer);
         if (constraintViolations.isEmpty()) {
             try {
                 em.persist(customer);
                 em.flush();
+                return customer;
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
                         && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
-                    throw new CustomerExistException("Atm card with same card number already exist");
+                    throw new CustomerExistException("Such customer account already exist");
                 } else {
                     throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
                 }
@@ -59,14 +61,18 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }
-    
+
     @Override
     public boolean checkCustomerCredentials(String email, String password) throws CustomerNotFoundException, InvalidLoginException {
         Customer c = retrieveCustomerByEmail(email);
-        if (c != null) {
-            return c.getPassword().equals(password);
+        if (c == null) {
+            throw new CustomerNotFoundException("Customer with the email " + email + " does not exist");
         }
-        throw new InvalidLoginException("Invalid login credentials");
+
+        if (!c.getPassword().equals(password)) {
+            throw new InvalidLoginException("Incorrect password for the provided email");
+        }
+        return true;
     }
 
     @Override
@@ -75,18 +81,18 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
         if (c != null) {
             return c;
         }
-        throw new CustomerNotFoundException("Customer with the id: " + customerId + " does not exist");
+        throw new CustomerNotFoundException("Customer with the id: " + customerId + " does not exist\n");
     }
 
-    private Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
-        Query query = em.createQuery("SELECT c FROM Customer c WHERE c.email = :email");
-        query.setParameter("email", email);
-
+    @Override
+    public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException {
         try {
-            Customer customer = (Customer) query.getSingleResult();
-            return customer;
-        } catch (Exception ex) {
-            throw new CustomerNotFoundException("Customer with the eamil " + email + " does not exist");
+            Query q = em.createQuery("SELECT c FROM Customer c WHERE c.email = :email");
+            q.setParameter("email", email);
+            Customer e = (Customer) q.getSingleResult();
+            return e;
+        } catch (NoResultException ex) {
+            throw new CustomerNotFoundException("Customer with the email " + email + " does not exist");
         }
     }
 

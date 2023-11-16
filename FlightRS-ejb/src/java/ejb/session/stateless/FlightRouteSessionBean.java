@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -64,13 +65,6 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
                 flightRoute.setOriginAirport(origin);
                 flightRoute.setDestinationAirport(destination);
 
-                if (flightRoute.isHasReturnFlight()) {
-                    FlightRoute returnRoute = new FlightRoute(true, false);
-                    em.persist(returnRoute);
-                    returnRoute.setOriginAirport(destination);
-                    returnRoute.setDestinationAirport(origin);
-                }
-
                 em.flush();
                 return flightRoute;
             } catch (AirportNotFoundException ex) {
@@ -117,7 +111,6 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
         if (flightRoute != null) {
             return flightRoute;
-
         } else {
             throw new FlightRouteNotFoundException("Flight Route with flightRoute ID " + flightRouteId + " does not exist");
         }
@@ -128,40 +121,43 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.originAirport = :origin AND fr.destinationAirport = :destination");
         q.setParameter("origin", origin);
         q.setParameter("destination", destination);
-        FlightRoute flightRoute = (FlightRoute) q.getSingleResult();
-
-        if (flightRoute != null) {
+        try {
+            FlightRoute flightRoute = (FlightRoute) q.getSingleResult();
             return flightRoute;
+        } catch (NoResultException ex) {
+            throw new FlightRouteNotFoundException("Flight route with origin airport " + origin.getAirportCode() + " and " + "destination airport " + destination.getAirportCode() + " does not exist");
         }
-        throw new FlightRouteNotFoundException("Flight route with origin airport " + origin.getAirportCode() + " and " + "destination airport " + destination.getAirportCode() + " does not exist");
     }
 
     @Override
     public FlightRoute retrieveFlightRouteByFlightId(Long flightId) throws FlightNotFoundException {
         Flight flight = flightSessionBean.retrieveFlightById(flightId);
-        if (flight != null) {
-            Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr = :flight");
-            q.setParameter("flight", flight.getFlightRoute());
-            return (FlightRoute) q.getSingleResult();
+        Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr = :flight");
+        q.setParameter("flight", flight.getFlightRoute());
+        try {
+            FlightRoute fr = (FlightRoute) q.getSingleResult();
+            return fr;
+        } catch (NoResultException ex) {
+            throw new FlightNotFoundException("Flight id: " + flightId + " cannot be deleted because it does not exist");
         }
-        throw new FlightNotFoundException("Flight id: " + flightId + " cannot be deleted because it does not exist");
     }
 
     @Override
-
-    public boolean deleteFlightRoute(Long routeId) throws FlightRouteNotFoundException, DeleteFlightRouteException {
-        FlightRoute flightRoute = retrieveflightRouteById(routeId);
+    public boolean deleteFlightRoute(String origin, String destination) throws AirportNotFoundException, FlightRouteNotFoundException, DeleteFlightRouteException {
+        Airport originAirport = airportSessionBean.retrieveAirportByCode(origin);
+        Airport destinationAirport = airportSessionBean.retrieveAirportByCode(destination);
+        FlightRoute flightRoute = retrieveflightRouteByAirport(originAirport, destinationAirport);
         if (flightRoute == null) {
-            throw new FlightRouteNotFoundException("Flight Route with flightRoute ID " + routeId + " does not exist");
+            throw new FlightRouteNotFoundException("Flight Route with route " + origin + " to " + destination + " does not exist");
         }
-        List<Flight> flights = flightSessionBean.retrieveFlightByFlightRouteId(routeId);
+        List<Flight> flights = flightSessionBean.retrieveFlightByFlightRouteId(flightRoute.getFlightRouteId());
 
         if (flights.isEmpty()) {
             em.remove(flightRoute);
             return true;
         } else {
             flightRoute.setIsDisabled(true);
-            throw new DeleteFlightRouteException("Flight route id: " + routeId + " is in use and cannot be deleted! It will be disabled");
+            throw new DeleteFlightRouteException("Flight route with route " + origin + " to " + destination + " is in use and cannot be deleted! It will be disabled");
         }
     }
 

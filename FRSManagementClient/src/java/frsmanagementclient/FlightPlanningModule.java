@@ -19,16 +19,7 @@ import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import util.enumeration.CabinClassType;
-import util.exception.AircraftConfigurationExistException;
 import util.exception.AircraftConfigurationNotFoundException;
-import util.exception.AircraftTypeNotFoundException;
-import util.exception.AirportNotFoundException;
-import util.exception.CabinClassExistException;
-import util.exception.DeleteFlightRouteException;
-import util.exception.FlightRouteExistException;
-import util.exception.FlightRouteNotFoundException;
-import util.exception.GeneralException;
-import util.exception.InputDataValidationException;
 
 /**
  *
@@ -67,7 +58,7 @@ public class FlightPlanningModule {
         System.out.println("1. Create New Aircraft Configuration");
         System.out.println("2. View All Aircraft Configurations");
         System.out.println("3. View Aircraft Configuration Details");
-        System.out.println("4. Exit");
+        System.out.println("4. Log out");
         System.out.print("> ");
         int input = sc.nextInt();
         sc.nextLine();
@@ -97,7 +88,7 @@ public class FlightPlanningModule {
         System.out.println("1. Create New Flight Route");
         System.out.println("2. View All Flight Routes");
         System.out.println("3. Delete Flight Route");
-        System.out.println("4. Exit");
+        System.out.println("4. Log out");
         System.out.print("> ");
         int input = sc.nextInt();
         sc.nextLine();
@@ -128,7 +119,7 @@ public class FlightPlanningModule {
         List<CabinClass> ccs = new ArrayList<>();
         System.out.println("=== Merlion FlightRS :: New Air Configuration ===\n");
         System.out.print("Enter configuration name> ");
-        ac.setName(sc.nextLine());
+        ac.setName(sc.nextLine().trim().toUpperCase());
         System.out.print("Enter number of cabin class> ");
         int numOfCabinClass = sc.nextInt();
         ac.setNumOfCabinClass(numOfCabinClass);
@@ -160,8 +151,6 @@ public class FlightPlanningModule {
             int max = seatsAbreast * rows;
             cabinClassCap += max;
             cc.setMaxCapacity(max);
-            cc.setAvailableSeats(max);
-            cc.setReservedSeats(0);
 
             ccs.add(cc);
         }
@@ -170,18 +159,21 @@ public class FlightPlanningModule {
         if (constraintViolations.isEmpty() && cabinClassCap == configMaxCap) {
             try {
                 AircraftConfiguration newAc = aircraftConfigurationSessionBean.createNewAircraftConfig(ac, ccs);
-                System.out.println("Aircraft Configuration is created successfully!\n");
-            } catch (AircraftTypeNotFoundException ex) {
-                System.out.println("Aircraft type does not exist");
-            } catch (CabinClassExistException ex) {
-                System.out.println("Detected cabin class that already exist\n");
-            } catch (AircraftConfigurationExistException ex) {
-                System.out.println("Aircraft configuration already exist\n");
-            } catch (GeneralException ex) {
-                System.out.println(ex.getMessage() + "\n");
-            } catch (InputDataValidationException ex) {
+                System.out.println("Aircraft Configuration " + newAc.getName() + " is created successfully!\n");
+            } catch (Exception ex) {
                 System.out.println(ex.getMessage() + "\n");
             }
+//            catch (AircraftTypeNotFoundException ex) {
+//                System.out.println("Aircraft type does not exist");
+//            } catch (CabinClassExistException ex) {
+//                System.out.println("Detected cabin class that already exist\n");
+//            } catch (AircraftConfigurationExistException ex) {
+//                System.out.println("Aircraft configuration already exist\n");
+//            } catch (GeneralException ex) {
+//                System.out.println(ex.getMessage() + "\n");
+//            } catch (InputDataValidationException ex) {
+//                System.out.println(ex.getMessage() + "\n");
+//            }
         } else {
             showInputDataValidationErrorsForAircraftConfiguration(constraintViolations);
         }
@@ -206,12 +198,11 @@ public class FlightPlanningModule {
     }
 
     private void doViewAircraftConfigurationDetails(Scanner sc) {
-        System.out.print("Enter Aircraft Configuration ID to view> ");
-        Long id = sc.nextLong();
-        sc.nextLine();
+        System.out.print("Enter Aircraft Configuration name to view> ");
+        String name = sc.nextLine().trim().toUpperCase();
 
         try {
-            AircraftConfiguration ac = aircraftConfigurationSessionBean.retrieveAirConfigById(id);
+            AircraftConfiguration ac = aircraftConfigurationSessionBean.retrieveAirConfigByName(name);
             System.out.println("Name: " + ac.getName());
             System.out.println("Max Capacity: " + ac.getMaxSeats());
             List<CabinClass> ccs = ac.getCabinClasses();
@@ -231,7 +222,7 @@ public class FlightPlanningModule {
             }
 
         } catch (AircraftConfigurationNotFoundException ex) {
-            System.out.println("Aircraft Configuration with id: " + id + " does not exist");
+            System.out.println(ex.getMessage() + "\n");
         }
 
     }
@@ -255,15 +246,23 @@ public class FlightPlanningModule {
             try {
                 FlightRoute fr = flightRouteSessionBean.createNewFlightRoute(route, origin, destination);
                 System.out.println("Flight Route " + fr.getFlightRouteId() + " is created successfully!\n");
-            } catch (AirportNotFoundException ex) {
-                System.out.println("Airport does not exist\n");
-            } catch (FlightRouteExistException ex) {
-                System.out.println("Such flight route already exist\n");
-            } catch (GeneralException ex) {
-                System.out.println(ex.getMessage() + "\n");
-            } catch (InputDataValidationException ex) {
+                if (route.isHasReturnFlight()) {
+                    FlightRoute returnFr = flightRouteSessionBean.createNewFlightRoute(route, destination, origin);
+                    System.out.println("Flight Route " + returnFr.getFlightRouteId() + " is created successfully!\n");
+                }
+
+            } catch (Exception ex) {
                 System.out.println(ex.getMessage() + "\n");
             }
+//            catch (AirportNotFoundException ex) {
+//                System.out.println("Airport does not exist\n");
+//            } catch (FlightRouteExistException ex) {
+//                System.out.println("Such flight route already exist\n");
+//            } catch (GeneralException ex) {
+//                System.out.println(ex.getMessage() + "\n");
+//            } catch (InputDataValidationException ex) {
+//                System.out.println(ex.getMessage() + "\n");
+//            }
         } else {
             showInputDataValidationErrorsForFlightRoute(constraintViolations);
         }
@@ -289,18 +288,22 @@ public class FlightPlanningModule {
     }
 
     private void doDeleteFlightRoute(Scanner sc) {
-        System.out.print("Please input the Flight Route ID you wish to remove> ");
-        Long id = sc.nextLong();
-        sc.nextLine();
+        System.out.print("Please input the Flight Route origin you wish to remove> ");
+        String origin = sc.nextLine().toUpperCase();
+        System.out.print("Please input the Flight Route destination you wish to remove> ");
+        String destination = sc.nextLine().toUpperCase();
 
         try {
-            flightRouteSessionBean.deleteFlightRoute(id);
-            System.out.println("Flight Route " + id + " is successfully deleted\n");
-        } catch (FlightRouteNotFoundException ex) {
-            System.out.println("Flight route id: " + id + " does not exist\n");
-        } catch (DeleteFlightRouteException ex) {
-            System.out.println("Flight route id: " + id + " is in use and cannot be deleted! It will be disabled");
+            flightRouteSessionBean.deleteFlightRoute(origin, destination);
+            System.out.println("Flight Route " + origin + " to " + destination + " is successfully deleted\n");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage() + "\n");
         }
+//        catch (FlightRouteNotFoundException ex) {
+//            System.out.println("Flight route id: " + id + " does not exist\n");
+//        } catch (DeleteFlightRouteException ex) {
+//            System.out.println("Flight route id: " + id + " is in use and cannot be deleted! It will be disabled");
+//        }
     }
 
     private void showInputDataValidationErrorsForAircraftConfiguration(Set<ConstraintViolation<AircraftConfiguration>> constraintViolations) {

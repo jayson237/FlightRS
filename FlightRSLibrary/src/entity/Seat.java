@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  *
@@ -22,7 +20,7 @@ public class Seat implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seatId;
 
     @Column(nullable = false)
@@ -31,11 +29,8 @@ public class Seat implements Serializable {
     @Column(nullable = false)
     private boolean isOccupied;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private CabinClass cabinClass;
-
     public Seat() {
+
     }
 
     public Seat(String seatNumber, boolean isOccupied) {
@@ -65,14 +60,6 @@ public class Seat implements Serializable {
 
     public void setIsOccupied(boolean isOccupied) {
         this.isOccupied = isOccupied;
-    }
-
-    public CabinClass getCabinClass() {
-        return cabinClass;
-    }
-
-    public void setCabinClass(CabinClass cabinClass) {
-        this.cabinClass = cabinClass;
     }
 
     @Override

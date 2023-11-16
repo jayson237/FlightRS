@@ -60,7 +60,9 @@ public class DataInitSessionBean {
         employee = new Employee("Sales Manager", "salesmanager@mlair.com.sg", "password", EmployeeRole.SALESMANAGER);
         em.persist(employee);
         em.flush();
-
+        employee = new Employee("System Administrator", "admin@mlair.com.sg", "password", EmployeeRole.SYSTEMADMIN);
+        em.persist(employee);
+        em.flush();
     }
 
     private void initPartner() {

@@ -4,6 +4,7 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateful.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.AircraftConfigurationSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
@@ -25,6 +26,7 @@ public class MainApp {
     private FlightRouteSessionBeanRemote flightRouteSessionBean;
     private FlightSessionBeanRemote flightSessionBean;
     private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean;
+    private FlightReservationSessionBeanRemote flightReservationSessionBean;
     private Employee employee;
     private FlightPlanningModule flightPlanning;
     private FlightOperationModule flightOperation;
@@ -39,19 +41,20 @@ public class MainApp {
             AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBean,
             FlightRouteSessionBeanRemote flightRouteSessionBean,
             FlightSessionBeanRemote flightSessionBean,
-            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean) {
+            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean, FlightReservationSessionBeanRemote flightReservationSessionBean) {
         this.employeeSessionBean = employeeSessionBean;
         this.aircraftConfigurationSessionBean = aircraftConfigurationSessionBean;
         this.flightRouteSessionBean = flightRouteSessionBean;
         this.flightSessionBean = flightSessionBean;
         this.flightSchedulePlanSessionBean = flightSchedulePlanSessionBean;
+        this.flightReservationSessionBean=  flightReservationSessionBean;
     }
 
     public void run() throws EmployeeNotFoundException, InvalidLoginException {
         Scanner sc = new Scanner(System.in);
         while (!exitRequested) {
-            System.out.println("*** Welcome to Merlion Flight Management System ***");
             if (employee == null) {
+                System.out.println("*** Welcome to Merlion Flight Management System ***");
                 doLogin(sc);
                 System.out.println();
             } else {
@@ -65,8 +68,23 @@ public class MainApp {
                     flightOperation = new FlightOperationModule(this, employee, flightSessionBean, flightSchedulePlanSessionBean);
                     flightOperation.menuScheduleManager();
                 } else if (employee.getemployeeRole().name().equals("SALESMANAGER")) {
-//                    salesManagement = new SalesManagementModule(this, employee, flightReservationSessionBean);
-//                    salesManagement.menuSalesManagement();
+                    salesManagement = new SalesManagementModule(this, employee, flightReservationSessionBean);
+                    salesManagement.menuSalesManagement();
+                } else if (employee.getemployeeRole().name().equals("SYSTEMADMIN")) {
+                    System.out.println("You are the system administrator");
+                    System.out.println("1. Exit");
+                    System.out.print("> ");
+                    int input = sc.nextInt();
+                    sc.nextLine();
+                    switch (input) {
+                        case 1:
+                            doLogOut();
+                            break;
+                        default:
+                            System.out.println("Invalid Input please try again");
+                            run();
+                            break;
+                    }
                 }
             }
         }
@@ -84,19 +102,16 @@ public class MainApp {
             String password = sc.nextLine();
             if (employeeSessionBean.checkEmployeeCredentials(email, password)) {
                 employee = currEmployee;
-                System.out.println("You are logged in as " + employee.getName() + "\n");
+                System.out.println("You are logged in as " + employee.getName());
             }
-        } catch (EmployeeNotFoundException ex) {
-            throw new EmployeeNotFoundException("Such employee email is not found");
-        } catch (InvalidLoginException ex) {
-            throw new InvalidLoginException("Invalid login credentials");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage() + "\n");
         }
     }
 
     public void doLogOut() {
         employee = null;
-        System.out.println("You have exited. Goodbye!");
-        exitRequested = true;
+        System.out.println("You have exited. Goodbye!\n");
     }
 
 }

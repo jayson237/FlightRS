@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Employee;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.EmployeeNotFoundException;
@@ -36,7 +37,7 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
         if (!e.getPassword().equals(password)) {
             throw new InvalidLoginException("Incorrect password for the provided email");
         }
-        return true; 
+        return true;
     }
 
     @Override
@@ -50,14 +51,14 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
 
     @Override
     public Employee retrieveEmployeeByEmail(String email) throws EmployeeNotFoundException {
-        Query q = em.createQuery("SELECT e FROM Employee e WHERE e.email = :email");
-        q.setParameter("email", email);
-        Employee e = (Employee) q.getSingleResult();
-
-        if (e != null) {
+        try {
+            Query q = em.createQuery("SELECT e FROM Employee e WHERE e.email = :email");
+            q.setParameter("email", email);
+            Employee e = (Employee) q.getSingleResult();
             return e;
+        } catch (NoResultException ex) {
+            throw new EmployeeNotFoundException("Employee with the email " + email + " does not exist");
         }
-        throw new EmployeeNotFoundException("Employee with the email " + email + " does not exist");
     }
 
 }

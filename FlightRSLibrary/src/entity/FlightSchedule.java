@@ -37,14 +37,11 @@ public class FlightSchedule implements Serializable {
     private Date departureDateTime;
 
     @Column(nullable = false)
-    private Integer estimatedDuration;
+    private String estimatedDuration;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date arrivalDateTime;
-
-    @Column(nullable = false)
-    private boolean isDisabled;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -59,11 +56,10 @@ public class FlightSchedule implements Serializable {
     public FlightSchedule() {
     }
 
-    public FlightSchedule(Date departureDateTime, Integer estimatedMinutes, Date arrivalDateTime, boolean isDisabled) {
+    public FlightSchedule(Date departureDateTime, String estimatedDuration, Date arrivalDateTime) {
         this.departureDateTime = departureDateTime;
-        this.estimatedDuration = estimatedMinutes;
-        this.arrivalDateTime = new Date(departureDateTime.getTime() + (estimatedMinutes * 60 * 1000));
-        this.isDisabled = isDisabled;
+        this.estimatedDuration = estimatedDuration;
+        this.arrivalDateTime = arrivalDateTime;
     }
 
     public Long getFlightScheduleId() {
@@ -82,11 +78,11 @@ public class FlightSchedule implements Serializable {
         this.departureDateTime = departureDateTime;
     }
 
-    public Integer getEstimatedDuration() {
+    public String getEstimatedDuration() {
         return estimatedDuration;
     }
 
-    public void setEstimatedDuration(Integer estimatedDuration) {
+    public void setEstimatedDuration(String estimatedDuration) {
         this.estimatedDuration = estimatedDuration;
     }
 
@@ -96,14 +92,6 @@ public class FlightSchedule implements Serializable {
 
     public void setArrivalDateTime(Date arrivalDateTime) {
         this.arrivalDateTime = arrivalDateTime;
-    }
-
-    public boolean getIsDisabled() {
-        return isDisabled;
-    }
-
-    public void setIsDisabled(boolean isDisabled) {
-        this.isDisabled = isDisabled;
     }
 
     public FlightSchedulePlan getFlightSchedulePlan() {

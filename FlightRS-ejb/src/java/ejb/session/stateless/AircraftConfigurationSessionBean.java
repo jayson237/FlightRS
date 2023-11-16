@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -103,12 +104,12 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     public AircraftConfiguration retrieveAirConfigByName(String aircraftConfig) throws AircraftConfigurationNotFoundException {
         Query q = em.createQuery("SELECT ac FROM AircraftConfiguration ac WHERE ac.name = :configName");
         q.setParameter("configName", aircraftConfig);
-        AircraftConfiguration config = (AircraftConfiguration) q.getSingleResult();
-        if (config != null) {
-            
+        try {
+            AircraftConfiguration config = (AircraftConfiguration) q.getSingleResult();
             return config;
+        } catch (NoResultException ex) {
+            throw new AircraftConfigurationNotFoundException("Air configuration with name: " + aircraftConfig + " does not exist");
         }
-        throw new AircraftConfigurationNotFoundException("Air configuration with name: " + aircraftConfig + " does not exist");
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<AircraftConfiguration>> constraintViolations) {

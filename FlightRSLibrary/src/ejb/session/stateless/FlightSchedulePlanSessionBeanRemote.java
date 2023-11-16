@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.CabinClass;
+import entity.Fare;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.util.List;
@@ -23,7 +24,5 @@ import util.exception.InputDataValidationException;
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
 
-    public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException;
-
-    public FlightSchedulePlan createNewFlightSchedulePlan(List<FlightSchedule> flightSchedules, FlightSchedulePlan plan, Long flightId) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, FlightScheduleExistException, FlightSchedulePlanExistException, InputDataValidationException, GeneralException;
+    public FlightSchedulePlan createNewFlightSchedulePlan(List<FlightSchedule> flightSchedules, FlightSchedulePlan plan, Long flightId, List<Fare> fares) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, FlightScheduleExistException, FlightSchedulePlanExistException, InputDataValidationException, GeneralException;
 }

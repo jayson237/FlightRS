@@ -6,7 +6,6 @@ package ejb.session.stateless;
 
 import entity.CabinClass;
 import entity.FlightSchedule;
-import entity.FlightSchedulePlan;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -53,14 +52,19 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanLocal
         Set<ConstraintViolation<FlightSchedule>> constraintViolations = validator.validate(flightSchedule);
         if (constraintViolations.isEmpty()) {
             try {
-                FlightSchedulePlan plan = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanById(planId);
                 em.persist(flightSchedule);
-                flightSchedule.setFlightSchedulePlan(plan);
-                plan.getFlightSchedules().add(flightSchedule);
+                List<CabinClass> cc = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanById(planId).getFlight().getAircraftConfiguration().getCabinClasses();
+                for (CabinClass cabin : cc) {
+                    try {
+                        cabinClassSessionBean.createNewCabinClass(cabin);
+                        flightSchedule.getCabinClasses().add(cabin);
+                    } catch (Exception e) {
+                        System.out.println("Cabin Class exist");
+                    }
+
+                }
                 em.flush();
                 return flightSchedule;
-            } catch (FlightSchedulePlanNotFoundException ex) {
-                throw new FlightSchedulePlanNotFoundException("Flight Schedule Plan with id: " + planId + " does not exist");
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null

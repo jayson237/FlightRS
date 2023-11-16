@@ -21,6 +21,8 @@ public interface CustomerSessionBeanRemote {
 
     public boolean checkCustomerCredentials(String email, String password) throws CustomerNotFoundException, InvalidLoginException;
 
-    public void registerCustomer(Customer customer) throws CustomerExistException, GeneralException, InputDataValidationException;
+    public Customer registerCustomer(Customer customer) throws CustomerExistException, GeneralException, InputDataValidationException;
+
+    public Customer retrieveCustomerByEmail(String email) throws CustomerNotFoundException;
 
 }

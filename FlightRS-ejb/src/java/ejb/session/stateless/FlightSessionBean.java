@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -71,10 +72,13 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
                 Airport destination = airportSessionBean.retrieveAirportByCode(destinationAirport);
                 FlightRoute flightRoute = flightRouteSessionBean.retrieveflightRouteByAirport(origin, destination);
                 AircraftConfiguration config = aircraftConfigurationSessionBean.retrieveAirConfigByName(aircraftConfig);
-                em.persist(flight);
-                flight.setAircraftConfiguration(config);
-                flight.setFlightRoute(flightRoute);
-                em.flush();
+
+                if (!flightRoute.isIsDisabled()) {
+                    em.persist(flight);
+                    flight.setAircraftConfiguration(config);
+                    flight.setFlightRoute(flightRoute);
+                    em.flush();
+                }
                 return flight;
             } catch (FlightRouteNotFoundException ex) {
                 throw new FlightRouteNotFoundException("Flight route with origin airport " + originAirport + " and " + "destination airport " + destinationAirport + " does not exist");
@@ -86,7 +90,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
                         && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
-                    throw new FlightExistException("Flight already exist");
+                    throw new FlightExistException("Flight already exists");
                 } else {
                     throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
                 }
@@ -94,6 +98,14 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+    }
+
+    @Override
+    public boolean retrieveRouteStatus(String origin, String destination) throws AirportNotFoundException, FlightRouteNotFoundException {
+        Airport originAirport = airportSessionBean.retrieveAirportByCode(origin);
+        Airport destinationAirport = airportSessionBean.retrieveAirportByCode(destination);
+        FlightRoute flightRoute = flightRouteSessionBean.retrieveflightRouteByAirport(originAirport, destinationAirport);
+        return flightRoute.isHasReturnFlight();
     }
 
     @Override
@@ -141,11 +153,13 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     public Flight retrieveFlightByNumber(String flightNum) throws FlightNotFoundException {
         Query q = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :number");
         q.setParameter("number", flightNum);
-        Flight flight = (Flight) q.getSingleResult();
-        if (flight != null) {
+        try {
+            Flight flight = (Flight) q.getSingleResult();
             return flight;
+        } catch (NoResultException ex) {
+            throw new FlightNotFoundException("Flight with number: " + flightNum + " does not exist");
         }
-        throw new FlightNotFoundException("Flight with number: " + flightNum + " does not exist");
+
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateful.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.AircraftConfigurationSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
@@ -18,6 +19,9 @@ import util.exception.InvalidLoginException;
  * @author jayso
  */
 public class Main {
+
+    @EJB
+    private static FlightReservationSessionBeanRemote flightReservationSessionBean;
 
     @EJB
     private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean;
@@ -38,7 +42,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws EmployeeNotFoundException, InvalidLoginException {
-        MainApp mainApp = new MainApp(employeeSessionBean, aircraftConfigurationSessionBean, flightRouteSessionBean, flightSessionBean, flightSchedulePlanSessionBean);
+        MainApp mainApp = new MainApp(employeeSessionBean, aircraftConfigurationSessionBean, flightRouteSessionBean, flightSessionBean, flightSchedulePlanSessionBean, flightReservationSessionBean);
         mainApp.run();
     }
 

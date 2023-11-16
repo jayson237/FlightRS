@@ -32,6 +32,9 @@ public class Flight implements Serializable {
 
     @Column(nullable = false)
     private boolean isDisabled;
+    
+    @Column 
+    private String returnFlightNumber;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -47,9 +50,10 @@ public class Flight implements Serializable {
     public Flight() {
     }
 
-    public Flight(String flightNumber, boolean isDisabled) {
+    public Flight(String flightNumber, boolean isDisabled, String returnFLightNumber) {
         this.flightNumber = flightNumber;
         this.isDisabled = isDisabled;
+        this.returnFlightNumber = returnFLightNumber;
     }
 
     public Long getFlightId() {
@@ -74,6 +78,14 @@ public class Flight implements Serializable {
 
     public void setIsDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
+    }
+
+    public String getReturnFlightNumber() {
+        return returnFlightNumber;
+    }
+
+    public void setReturnFlightNumber(String returnFlightNumber) {
+        this.returnFlightNumber = returnFlightNumber;
     }
 
     public FlightRoute getFlightRoute() {

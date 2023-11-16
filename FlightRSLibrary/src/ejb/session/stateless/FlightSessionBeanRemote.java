@@ -32,8 +32,10 @@ public interface FlightSessionBeanRemote {
 
     public boolean deleteFlight(Long flightId) throws FlightNotFoundException, DeleteFlightException;
 
-    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, String aircraftConfig) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException;
-
     public Flight retrieveFlightByNumber(String flightNum) throws FlightNotFoundException;
+
+    public boolean retrieveRouteStatus(String origin, String destination) throws AirportNotFoundException, FlightRouteNotFoundException;
+
+    public Flight createNewFlight(Flight flight, String originAirport, String destinationAirport, String aircraftConfig) throws AirportNotFoundException, FlightRouteNotFoundException, AircraftConfigurationNotFoundException, FlightExistException, GeneralException, InputDataValidationException;
 
 }

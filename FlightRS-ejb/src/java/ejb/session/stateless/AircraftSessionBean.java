@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Aircraft;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.AircraftTypeNotFoundException;
@@ -25,10 +26,11 @@ public class AircraftSessionBean implements AircraftSessionBeanLocal {
     public Aircraft retrieveAircraftByType(String aircraftType) throws AircraftTypeNotFoundException {
         Query q = em.createQuery("SELECT a FROM Aircraft a WHERE a.name = :type");
         q.setParameter("type", aircraftType);
-        Aircraft a = (Aircraft) q.getSingleResult();
-        if (a != null) {
+        try {
+            Aircraft a = (Aircraft) q.getSingleResult();
             return a;
+        } catch (NoResultException ex) {
+            throw new AircraftTypeNotFoundException("There is no such aircraft under Merlion Airlines");
         }
-        throw new AircraftTypeNotFoundException("There is no such aircraft under Merlion Airlines");
     }
 }

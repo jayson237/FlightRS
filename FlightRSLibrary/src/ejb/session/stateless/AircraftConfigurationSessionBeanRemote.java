@@ -22,10 +22,10 @@ import util.exception.InputDataValidationException;
 @Remote
 public interface AircraftConfigurationSessionBeanRemote {
 
+    public AircraftConfiguration retrieveAirConfigByName(String aircraftConfig) throws AircraftConfigurationNotFoundException;
+
     public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException;
 
     public List<AircraftConfiguration> retrieveAllAirConfigurations();
-
-    public AircraftConfiguration retrieveAirConfigById(Long aircraftConfigId) throws AircraftConfigurationNotFoundException;
 
 }
