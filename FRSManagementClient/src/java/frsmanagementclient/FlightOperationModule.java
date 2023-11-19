@@ -63,7 +63,7 @@ public class FlightOperationModule {
 
     public void menuScheduleManager() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("=== Merlion FlightRS Flight Operation Module ===\n");
+        System.out.println("\n=== Merlion FlightRS Flight Operation Module ===\n");
         System.out.println("1. Create Flight");
         System.out.println("2. View All Flights");
         System.out.println("3. View Flight Details");
@@ -156,15 +156,9 @@ public class FlightOperationModule {
     private void doViewAllFlights() {
         List<Flight> flights = flightSessionBean.retrieveAllFlights();
         if (!flights.isEmpty()) {
-            int size = flights.size();
-            for (int i = 0; i < size; i++) {
-                Flight fr = flights.get(i);
-                System.out.println("ID: " + fr.getFlightId()
-                        + ", Flight Number: " + fr.getFlightNumber());
-
-                if (i == size - 1) {
-                    System.out.println("");
-                }
+            System.out.printf("%10s%15s\n", "ID", "Flight Number");
+            for (Flight fr : flights) {
+                System.out.printf("%10s%15s\n", fr.getFlightId(), fr.getFlightNumber());
             }
         } else {
             System.out.println("There is no existing Flight record\n");
@@ -305,13 +299,13 @@ public class FlightOperationModule {
                 case 1:
                     plan.setType(FlightScheduleType.MANUALSINGLE);
                     sc.nextLine();
-                    infoPair = getFlightSchedule(sc);
+                    infoPair = getFlightSchedule(sc, false);
                     break;
                 case 2:
                     plan.setType(FlightScheduleType.MANUALMULTIPLE);
                     String res = sc.nextLine().toUpperCase();
                     while (!res.equals("N")) {
-                        Pair newPair = getFlightSchedule(sc);
+                        Pair newPair = getFlightSchedule(sc, false);
                         flightInfo.add(newPair);
                         System.out.print("Enter another schedule [Y/N]> ");
                         res = sc.nextLine().trim().toUpperCase();
@@ -319,7 +313,7 @@ public class FlightOperationModule {
                     break;
                 case 3:
                     plan.setType(FlightScheduleType.RECURRENTNDAY);
-                    infoPair = getFlightSchedule(sc);
+                    infoPair = getFlightSchedule(sc, true);
                     System.out.print("Enter recurrent end date (e.g., 1 Dec 23)> ");
                     String date = sc.nextLine().trim();
                     Date dailyEnd = dateFormat.parse(date);
@@ -327,7 +321,6 @@ public class FlightOperationModule {
                     break;
                 case 4:
                     plan.setType(FlightScheduleType.RECURRENTWEEKLY);
-                    infoPair = getFlightSchedule(sc);
                     System.out.println("Enter recurrent day ");
                     System.out.println("1: Sunday");
                     System.out.println("2: Monday");
@@ -339,6 +332,7 @@ public class FlightOperationModule {
                     System.out.print("> ");
                     recurrentDay = sc.nextInt();
                     sc.nextLine();
+                    infoPair = getFlightSchedule(sc, false);
                     System.out.print("Enter recurrent end date (e.g., 1 Dec 23)> ");
                     String date1 = sc.nextLine().trim();
                     Date weekEnd = dateFormat.parse(date1);
@@ -368,7 +362,7 @@ public class FlightOperationModule {
                 returnPlan.setRecurrentEndDate(plan.getRecurrentEndDate());
             }
 
-            if (plan.getType().equals(FlightScheduleType.MANUALSINGLE)) {
+            if (plan.getType().equals(FlightScheduleType.MANUALSINGLE) || plan.getType().equals(FlightScheduleType.RECURRENTNDAY) || plan.getType().equals(FlightScheduleType.RECURRENTWEEKLY)) {
                 Calendar c = Calendar.getInstance();
                 c.setTime(infoPair.getKey());
                 double duration = infoPair.getValue();
@@ -485,8 +479,6 @@ public class FlightOperationModule {
 
     private void doViewFlightSchedulePlanDetails(Scanner sc) {
         try {
-            int response = 0;
-            System.out.println("=== View Flight Schedule Plan details ===");
             System.out.print("Enter Flight Schedule Plan ID> ");
             Long id = sc.nextLong();
 
@@ -503,21 +495,31 @@ public class FlightOperationModule {
                     System.out.printf("%10s%15s%20s%25s%30s%25s%40s%40s%20s%30s\n", plan.getFlightSchedulePlanId(), plan.getFlightNumber(), plan.getType(), list.getFlightScheduleId(), list.getDepartureDateTime().toString().substring(0, 19), list.getEstimatedDuration(), route.getOriginAirport().getAirportName(), route.getDestinationAirport().getAirportName(), fares.getCabinClassType(), fares.getAmount());
                 }
             }
-            System.out.println("--------------------------");
-            System.out.println("1: Update Flight Schedule Plan");
-            System.out.println("2: Delete Flight Schedule Plan");
-            System.out.println("3: Back\n");
+            System.out.println("===================================");
+            while (true) {
+                System.out.println("1: Update Flight Schedule Plan");
+                System.out.println("2: Delete Flight Schedule Plan");
+                System.out.println("3: Back\n");
 
-            System.out.print("> ");
-            response = sc.nextInt();
-
-            if (response == 1) {
-                doUpdateFlightSchedulePlan(plan, sc);
-            } else if (response == 2) {
-                doDeleteFlightSchedulePlan(plan);
+                System.out.print("> ");
+                int response = sc.nextInt();
+                sc.nextLine();
+                switch (response) {
+                    case 1:
+                        doUpdateFlightSchedulePlan(plan, sc);
+                        break;
+                    case 2:
+                        doDeleteFlightSchedulePlan(plan, sc);
+                        break;
+                    default:
+                        System.out.println("Invalid input. Please try again!");
+                        doViewFlightSchedulePlanDetails(sc);
+                        break;
+                }
             }
+
         } catch (FlightSchedulePlanNotFoundException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println(ex.getMessage() + "\n");
         }
     }
 
@@ -533,10 +535,10 @@ public class FlightOperationModule {
 
             switch (response) {
                 case 1:
-                    updateFares(plan, sc);
+                    doUpdateFares(plan, sc);
                     break;
                 case 2:
-                    updateFlightSchedule(plan, sc);
+                    doUpdateFlightSchedule(plan, sc);
                     break;
                 default:
                     System.out.println("Invalid input. Please try again!");
@@ -546,10 +548,10 @@ public class FlightOperationModule {
         }
     }
 
-    private void updateFares(FlightSchedulePlan plan, Scanner sc) {
+    private void doUpdateFares(FlightSchedulePlan plan, Scanner sc) {
         try {
             int i = 1;
-            System.out.println(" * All Fares *");
+            System.out.println("== All Fares ===");
             for (Fare fare : plan.getFares()) {
                 System.out.println(i + ") " + fare.getFareCode() + ", $" + fare.getAmount());
                 i++;
@@ -571,23 +573,23 @@ public class FlightOperationModule {
         }
     }
 
-    private void doDeleteFlightSchedulePlan(FlightSchedulePlan plan) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("*** Delete Flight Schedule Plan ***");
+    private void doDeleteFlightSchedulePlan(FlightSchedulePlan plan, Scanner sc) {
+        System.out.println("=== Delete Flight Schedule Plan ===");
         System.out.print("Are you sure you want to delete (Y/N)> ");
         String response = sc.nextLine().trim();
 
         if (response.equalsIgnoreCase("Y")) {
             try {
-                flightSchedulePlanSessionBean.deleteFlightSchedulePlan(plan.getFlightSchedulePlanId());
-                System.out.println("Deletion successful!");
+                if (flightSchedulePlanSessionBean.deleteFlightSchedulePlan(plan.getFlightSchedulePlanId())) {;
+                    System.out.println("Deletion successful!");
+                }
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage() + "\n");
+                System.out.println(ex.getMessage() + "\n");
             }
         }
     }
 
-    private void updateFlightSchedule(FlightSchedulePlan plan, Scanner sc) {
+    private void doUpdateFlightSchedule(FlightSchedulePlan plan, Scanner sc) {
         System.out.printf("%30s%30s%20s\n", "ID", "Departure Date Time", "Duration");
         for (FlightSchedule flightSchedule : plan.getFlightSchedules()) {
             System.out.printf("%30s%30s%20s\n", flightSchedule.getFlightScheduleId(), flightSchedule.getDepartureDateTime().toString().substring(0, 19), flightSchedule.getEstimatedDuration());
@@ -602,45 +604,47 @@ public class FlightOperationModule {
 
         System.out.print("> ");
         int response = sc.nextInt();
+        sc.nextLine();
 
         if (response == 1) {
             try {
                 Date departure;
                 double duration;
-
-                SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy hh:mm:ss a");
-
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/M/yyyy hh:mm a");
                 try {
-                    System.out.print("Enter new departure Date and Time (dd/mm/yyyy hh:mm:ss AM/PM)> ");
+                    System.out.print("Enter new departure Date and Time (dd/mm/yyyy hh:mm AM/PM)> ");
                     String input = sc.nextLine().trim();
                     departure = formatter.parse(input);
                 } catch (ParseException ex) {
                     System.out.println("Invalid date and time\n");
                     return;
                 }
-                System.out.print("Enter new estimated flight duration (HRS)> ");
+                System.out.print("Enter new estimated flight duration (in hours)> ");
                 duration = sc.nextDouble();
                 flightScheduleSessionBean.updateFlightSchedule(flightScheduleId, departure, duration);
                 System.out.println("Flight Schedule " + flightScheduleId + " successfully updated!\n");
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage() + "\n");
+                System.out.println(ex.getMessage() + "\n");
             }
         } else if (response == 2) {
             try {
                 flightScheduleSessionBean.deleteFlightSchedule(flightScheduleId);
                 System.out.println("Flight Schedule " + flightScheduleId + " successfully removed!\n");
             } catch (Exception ex) {
-                System.out.println("Error: " + ex.getMessage() + "\n");
+                System.out.println(ex.getMessage() + "\n");
             }
         }
     }
 
-    private Pair<Date, Double> getFlightSchedule(Scanner sc) throws ParseException {
+    private Pair<Date, Double> getFlightSchedule(Scanner sc, boolean skipLine) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
 
         // Get departure date
         System.out.print("Enter departure Date (e.g., 1 Jan 23)> ");
+        if (skipLine) {
+            sc.nextLine();
+        }
         String dateInput = sc.nextLine().trim();
         Date departureDate = dateFormat.parse(dateInput);
 

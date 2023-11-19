@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import javafx.util.Pair;
 import javax.ejb.Remote;
+import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FareExistException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleExistException;
@@ -42,6 +43,6 @@ public interface FlightSchedulePlanSessionBeanRemote {
 
     public FlightSchedulePlan createNewReturnFlightSchedulePlanWeekly(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FlightSchedulePlanNotFoundException, FlightNotFoundException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
 
-    public void deleteFlightSchedulePlan(Long flightSchedulePlanID) throws FlightSchedulePlanNotFoundException;
+    public boolean deleteFlightSchedulePlan(Long flightSchedulePlanID) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException;
 
 }

@@ -125,27 +125,11 @@ public class SalesManagementModule {
                 char[][] seats = seatInventory.getSeats();
                 String cabinClassConfig = seatInventory.getCabin().getSeatingConfiguration();
 
-                String type = "";
-                if (null != seatInventory.getCabin().getType()) {
-                    switch (seatInventory.getCabin().getType()) {
-                        case F:
-                            type = "First Class";
-                            break;
-                        case J:
-                            type = "Business Class";
-                            break;
-                        case W:
-                            type = "Premium Economy Class";
-                            break;
-                        case Y:
-                            type = "Economy Class";
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                CabinClassType type = seatInventory.getCabin().getType();
+                
 
-                System.out.println(" -- " + type + " -- ");
+                System.out.println("Cabin Class" + type);
+                System.out.println("=============================");
                 System.out.print("Row  ");
                 int count = 0;
                 int no = 0;
@@ -186,15 +170,13 @@ public class SalesManagementModule {
 
             }
 
-            System.out.println(" --- Total --- ");
+            System.out.println("=== Total ===   ");
             System.out.println("Number of available seats: " + totalAvailSeats);
             System.out.println("Number of reserved seats: " + totalReservedSeats);
             System.out.println("Number of balance seats: " + totalBalanceSeats);
-            System.out.print("Press any key to continue...> ");
-            sc.nextLine();
 
-        } catch (FlightNotFoundException ex) {
-            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage() + "\n");
         }
     }
 
@@ -202,7 +184,7 @@ public class SalesManagementModule {
         try {
             System.out.println("=== View Flight Reservations ===");
             System.out.print("Enter Flight Number> ");
-            String flightNum = sc.nextLine().trim();
+            String flightNum = sc.nextLine().trim().toUpperCase();
             Flight flight = flightSessionBean.retrieveFlightByNumber(flightNum);
             if (flight.getFlightSchedulePlans().isEmpty()) {
                 System.out.println("Error: The selected flight has no flight schedule plans associated with it\n");
@@ -253,44 +235,18 @@ public class SalesManagementModule {
             }
 
             for (int i = 0; i < cabinTypes.size(); i++) {
-                Collections.sort(res.get(i), new Comparator<Pair<Passenger, String>>() {
-                    @Override
-                    public int compare(Pair<Passenger, String> o1, Pair<Passenger, String> o2) {
-                        if (o1.getKey().getSeatNumber().compareTo(o2.getKey().getSeatNumber()) > 0) {
-                            return 1;
-                        } else if (o1.getKey().getSeatNumber().compareTo(o2.getKey().getSeatNumber()) < 0) {
-                            return -1;
-                        } else {
-                            return 0;
-                        }
-                    }
-                });
+                Collections.sort(res.get(i), (o1, o2)
+                        -> o1.getKey().getSeatNumber().compareTo(o2.getKey().getSeatNumber())
+                );
             }
 
-            System.out.println("\n +++ All Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + " +++\n");
+            System.out.println("\nAll Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + "\n");
             if (cabinTypes.isEmpty()) {
                 System.out.println("No existing reservations for this flight schedule\n");
             }
             for (int i = 0; i < cabinTypes.size(); i++) {
-                String type;
-                switch (cabinTypes.get(i)) {
-                    case F:
-                        type = "First Class";
-                        break;
-                    case J:
-                        type = "Business Class";
-                        break;
-                    case W:
-                        type = "Premium Economy Class";
-                        break;
-                    case Y:
-                        type = "Economy Class";
-                        break;
-                    default:
-                        type = "Economy Class";
-                        break;
-                }
-                System.out.println(" -- " + type + " -- ");
+                System.out.println("Cabin Class " + cabinTypes.get(i));
+                System.out.println("==========================");
                 System.out.println();
                 for (Pair<Passenger, String> pair : res.get(i)) {
                     Passenger pass = pair.getKey();
@@ -299,11 +255,9 @@ public class SalesManagementModule {
                 }
                 System.out.println();
             }
-            System.out.print("Press any key to continue...> ");
-            sc.nextLine();
 
-        } catch (FlightNotFoundException ex) {
-            System.out.println("Error: " + ex.getMessage() + "\nPlease try again!\n");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage() + "\n");
         }
     }
 }

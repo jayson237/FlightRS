@@ -54,7 +54,7 @@ public class FlightPlanningModule {
 
     public void menuFleetManager() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("=== Merlion FlightRS Flight Planning Module ===\n");
+        System.out.println("\n=== Merlion FlightRS Flight Planning Module ===\n");
         System.out.println("1. Create New Aircraft Configuration");
         System.out.println("2. View All Aircraft Configurations");
         System.out.println("3. View Aircraft Configuration Details");
@@ -84,7 +84,7 @@ public class FlightPlanningModule {
 
     public void menuRoutePlanner() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("=== Merlion FlightRS Flight Planning Module ===\n");
+        System.out.println("\n=== Merlion FlightRS Flight Planning Module ===\n");
         System.out.println("1. Create New Flight Route");
         System.out.println("2. View All Flight Routes");
         System.out.println("3. Delete Flight Route");
@@ -176,15 +176,9 @@ public class FlightPlanningModule {
     private void doViewAllAircraftConfigurations() {
         List<AircraftConfiguration> airConfigs = aircraftConfigurationSessionBean.retrieveAllAirConfigurations();
         if (!airConfigs.isEmpty()) {
-            int size = airConfigs.size();
-            for (int i = 0; i < size; i++) {
-                AircraftConfiguration ac = airConfigs.get(i);
-                System.out.println(i + 1 + ": " + "Aircraft Type: " + ac.getAircraft().getName()
-                        + ", Name: " + ac.getName());
-
-                if (i == size - 1) {
-                    System.out.println("");
-                }
+            System.out.printf("%15s%20s%40s\n", "ID", "Aircraft Type", "Name");
+            for (AircraftConfiguration ac : airConfigs) {
+                System.out.printf("%15s%20s%40s\n", ac.getAircraftConfigurationId(), ac.getAircraft().getName(), ac.getName());
             }
         } else {
             System.out.println("There is no existing Aircraft Configuration record\n");
@@ -256,16 +250,9 @@ public class FlightPlanningModule {
     private void doViewAllFlightRoutes(Scanner sc) {
         List<FlightRoute> routes = flightRouteSessionBean.retrieveAllFlightRoutes();
         if (!routes.isEmpty()) {
-            int size = routes.size();
-            for (int i = 0; i < size; i++) {
-                FlightRoute fr = routes.get(i);
-                System.out.println(i + 1 + ": "
-                        + "Origin: " + fr.getOriginAirport().getAirportCode()
-                        + ", Destination: " + fr.getDestinationAirport().getAirportCode());
-
-                if (i == size - 1) {
-                    System.out.println("");
-                }
+            System.out.printf("%15s%20s%20s\n", "ID", "Origin", "Destination");
+            for (FlightRoute fr : routes) {
+                System.out.printf("%15s%20s%20s\n", fr.getFlightRouteId(), fr.getOriginAirport().getAirportCode(), fr.getDestinationAirport().getAirportCode());
             }
         } else {
             System.out.println("There is no existing Flight Route record\n");

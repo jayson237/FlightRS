@@ -133,7 +133,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     
     @Override
     public List<Flight> retrieveAllFlightByRoute(String origin, String destination) throws FlightNotFoundException {
-        Query query = em.createQuery("SELECT f FROM Flight f WHERE f.disabled = false AND f.flightRoute.originAirport.airportCode =: origin AND f.flightRoute.destinationAirport.airportCode =: destination ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+        Query query = em.createQuery("SELECT f FROM Flight f WHERE f.disabled = false AND f.flightRoute.originAirport.airportCode = :origin AND f.flightRoute.destinationAirport.airportCode = :destination ORDER BY SUBSTRING(f.flightNum, 3) ASC");
         query.setParameter("origin", origin);
         query.setParameter("destination", destination);
         List<Flight> flightResult =  query.getResultList();
@@ -217,7 +217,6 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         if (flightToRemove == null) {
             throw new FlightNotFoundException("Flight id: " + flightId + " cannot be deleted because it does not exist");
         }
-//        FlightRoute flightRoute = flightRouteSessionBean.retrieveFlightRouteByFlightId(flightId);
 
         List<FlightSchedulePlan> schedulePlan = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanByFlightId(flightId);
 

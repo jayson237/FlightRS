@@ -50,14 +50,14 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date arrivalDateTime;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
 
-    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private List<SeatInventory> seatInventory;
 
-    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER)
     private List<FlightReservation> flightReservations;
 
     public FlightSchedule() {
