@@ -24,6 +24,7 @@ import util.exception.AircraftConfigurationExistException;
 import util.exception.AircraftConfigurationNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.CabinClassExistException;
+import util.exception.ConfigurationExceedCapacity;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
 
@@ -52,7 +53,7 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
     }
 
     @Override
-    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException {
+    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws ConfigurationExceedCapacity, CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException {
         Set<ConstraintViolation<AircraftConfiguration>> constraintViolations = validator.validate(config);
         if (constraintViolations.isEmpty()) {
             try {
@@ -66,6 +67,9 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
                     }
                     config.setCabinClasses(cabinClasses);
                     em.flush();
+                    return config;
+                } else {
+                    throw new ConfigurationExceedCapacity("The configuration exceeds the max capacity of the aircraft type");
                 }
             } catch (AircraftTypeNotFoundException ex) {
                 throw new AircraftTypeNotFoundException("Aircraft type does not exist");
@@ -81,7 +85,6 @@ public class AircraftConfigurationSessionBean implements AircraftConfigurationSe
         } else {
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
-        return config;
     }
 
     @Override

@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -24,18 +26,28 @@ public class Airport implements Serializable {
     private Long id;
 
     @Column(length = 64, nullable = false, unique = true)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String airportName;
 
-    @Column(length = 64, nullable = false, unique = true)
+    @Column(length = 3, nullable = false, unique = true)
+    @Size(min = 3, max = 3)
+    @NotNull
     private String airportCode;
 
     @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String city;
 
     @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String stateProvince;
 
     @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String country;
 
     public Airport() {

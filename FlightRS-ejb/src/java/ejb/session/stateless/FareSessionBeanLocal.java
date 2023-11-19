@@ -5,9 +5,14 @@
 package ejb.session.stateless;
 
 import entity.Fare;
+import entity.FlightSchedulePlan;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.FareExistException;
+import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -16,6 +21,10 @@ import util.exception.InputDataValidationException;
 @Local
 public interface FareSessionBeanLocal {
 
-    public Fare createNewFare(Fare fare) throws InputDataValidationException, GeneralException;
+    public Fare createNewFare(Fare fare, FlightSchedulePlan flightSchedulePlan) throws FareExistException, InputDataValidationException, GeneralException, UnknownPersistenceException;
+
+    public void deleteFares(List<Fare> fares);
+
+    public List<Fare> retrieveFareByPlanId(Long planId) throws FlightSchedulePlanNotFoundException;
     
 }

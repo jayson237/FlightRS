@@ -7,9 +7,12 @@ package frsmanagementclient;
 import ejb.session.stateful.FlightReservationSessionBeanRemote;
 import ejb.session.stateless.AircraftConfigurationSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.FareSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
+import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
+import ejb.session.stateless.SeatInventorySessionBeanRemote;
 import entity.Employee;
 import java.util.Scanner;
 import util.exception.EmployeeNotFoundException;
@@ -23,10 +26,13 @@ public class MainApp {
 
     private EmployeeSessionBeanRemote employeeSessionBean;
     private AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBean;
+    private FareSessionBeanRemote fareSessionBean;
     private FlightRouteSessionBeanRemote flightRouteSessionBean;
     private FlightSessionBeanRemote flightSessionBean;
     private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean;
+    private FlightScheduleSessionBeanRemote flightScheduleSessionBean;
     private FlightReservationSessionBeanRemote flightReservationSessionBean;
+    private SeatInventorySessionBeanRemote seatInventorySessionBean;
     private Employee employee;
     private FlightPlanningModule flightPlanning;
     private FlightOperationModule flightOperation;
@@ -39,15 +45,22 @@ public class MainApp {
 
     public MainApp(EmployeeSessionBeanRemote employeeSessionBean,
             AircraftConfigurationSessionBeanRemote aircraftConfigurationSessionBean,
+            FareSessionBeanRemote fareSessionBean,
             FlightRouteSessionBeanRemote flightRouteSessionBean,
             FlightSessionBeanRemote flightSessionBean,
-            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean, FlightReservationSessionBeanRemote flightReservationSessionBean) {
+            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBean,
+            FlightScheduleSessionBeanRemote flightScheduleSessionBean,
+            FlightReservationSessionBeanRemote flightReservationSessionBean,
+            SeatInventorySessionBeanRemote seatInventorySessionBean) {
         this.employeeSessionBean = employeeSessionBean;
         this.aircraftConfigurationSessionBean = aircraftConfigurationSessionBean;
+        this.fareSessionBean = fareSessionBean;
         this.flightRouteSessionBean = flightRouteSessionBean;
         this.flightSessionBean = flightSessionBean;
         this.flightSchedulePlanSessionBean = flightSchedulePlanSessionBean;
-        this.flightReservationSessionBean=  flightReservationSessionBean;
+        this.flightScheduleSessionBean = flightScheduleSessionBean;
+        this.flightReservationSessionBean = flightReservationSessionBean;
+        this.seatInventorySessionBean = seatInventorySessionBean;
     }
 
     public void run() throws EmployeeNotFoundException, InvalidLoginException {
@@ -65,10 +78,10 @@ public class MainApp {
                     flightPlanning = new FlightPlanningModule(this, employee, flightRouteSessionBean);
                     flightPlanning.menuRoutePlanner();
                 } else if (employee.getemployeeRole().name().equals("SCHEDULEMANAGER")) {
-                    flightOperation = new FlightOperationModule(this, employee, flightSessionBean, flightSchedulePlanSessionBean);
+                    flightOperation = new FlightOperationModule(this, employee, fareSessionBean, flightScheduleSessionBean, flightSessionBean, flightSchedulePlanSessionBean);
                     flightOperation.menuScheduleManager();
                 } else if (employee.getemployeeRole().name().equals("SALESMANAGER")) {
-                    salesManagement = new SalesManagementModule(this, employee, flightReservationSessionBean);
+                    salesManagement = new SalesManagementModule(this, employee, flightReservationSessionBean, seatInventorySessionBean, flightSessionBean);
                     salesManagement.menuSalesManagement();
                 } else if (employee.getemployeeRole().name().equals("SYSTEMADMIN")) {
                     System.out.println("You are the system administrator");
@@ -105,7 +118,7 @@ public class MainApp {
                 System.out.println("You are logged in as " + employee.getName());
             }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage() + "\n");
+            System.out.println(ex.getMessage());
         }
     }
 

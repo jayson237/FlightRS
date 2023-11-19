@@ -7,12 +7,9 @@ package entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 /**
  *
@@ -35,18 +32,17 @@ public class Passenger implements Serializable {
     @Column(length = 32, nullable = false, unique = true)
     private String passportNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(nullable = false)
-    private FlightReservation flightReservation;
+    @Column(length = 32, nullable = false)
+    private String seatNumber;
 
     public Passenger() {
     }
 
-    public Passenger(String firstName, String lastName, String passportNumber) {
+    public Passenger(String firstName, String lastName, String passportNumber, String seatNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
-
         this.passportNumber = passportNumber;
+        this.seatNumber = seatNumber;
     }
 
     public Long getPassengerId() {
@@ -81,12 +77,12 @@ public class Passenger implements Serializable {
         this.passportNumber = passportNumber;
     }
 
-    public FlightReservation getFlightReservation() {
-        return flightReservation;
+    public String getSeatNumber() {
+        return seatNumber;
     }
 
-    public void setFlightReservation(FlightReservation flightReservation) {
-        this.flightReservation = flightReservation;
+    public void setSeatNumber(String seatNumber) {
+        this.seatNumber = seatNumber;
     }
 
     @Override

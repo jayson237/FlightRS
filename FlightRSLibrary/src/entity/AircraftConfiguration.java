@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -32,21 +34,25 @@ public class AircraftConfiguration implements Serializable {
     private Long aircraftConfigurationId;
 
     @Column(length = 32, nullable = false, unique = true)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String name;
 
     @Column(nullable = false)
     @Min(1)
     @Max(4)
+    @NotNull
     private Integer numOfCabinClass;
 
     @Column(nullable = false)
+    @NotNull
     private Integer maxSeats;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Aircraft aircraft;
 
-    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<CabinClass> cabinClasses;
 
     public AircraftConfiguration() {

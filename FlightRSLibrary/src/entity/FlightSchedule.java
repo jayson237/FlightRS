@@ -5,8 +5,12 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import javafx.util.Pair;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,11 +18,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -37,7 +42,9 @@ public class FlightSchedule implements Serializable {
     private Date departureDateTime;
 
     @Column(nullable = false)
-    private String estimatedDuration;
+    @Min(0)
+    @Max(24)
+    private double estimatedDuration;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
@@ -47,16 +54,19 @@ public class FlightSchedule implements Serializable {
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
 
-    @OneToMany
-    private List<CabinClass> cabinClasses;
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    private List<SeatInventory> seatInventory;
 
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.LAZY)
     private List<FlightReservation> flightReservations;
 
     public FlightSchedule() {
+        this.seatInventory = new ArrayList<>();
+        this.flightReservations = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDateTime, String estimatedDuration, Date arrivalDateTime) {
+    public FlightSchedule(Date departureDateTime, double estimatedDuration, Date arrivalDateTime) {
+        this();
         this.departureDateTime = departureDateTime;
         this.estimatedDuration = estimatedDuration;
         this.arrivalDateTime = arrivalDateTime;
@@ -78,11 +88,11 @@ public class FlightSchedule implements Serializable {
         this.departureDateTime = departureDateTime;
     }
 
-    public String getEstimatedDuration() {
+    public double getEstimatedDuration() {
         return estimatedDuration;
     }
 
-    public void setEstimatedDuration(String estimatedDuration) {
+    public void setEstimatedDuration(double estimatedDuration) {
         this.estimatedDuration = estimatedDuration;
     }
 
@@ -102,12 +112,12 @@ public class FlightSchedule implements Serializable {
         this.flightSchedulePlan = flightSchedulePlan;
     }
 
-    public List<CabinClass> getCabinClasses() {
-        return cabinClasses;
+    public List<SeatInventory> getSeatInventory() {
+        return seatInventory;
     }
 
-    public void setCabinClasses(List<CabinClass> cabinClasses) {
-        this.cabinClasses = cabinClasses;
+    public void setSeatInventory(List<SeatInventory> seatInventory) {
+        this.seatInventory = seatInventory;
     }
 
     public List<FlightReservation> getFlightReservations() {
@@ -141,6 +151,35 @@ public class FlightSchedule implements Serializable {
     @Override
     public String toString() {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
+    }
+
+    public static class FlightScheduleComparator implements Comparator<FlightSchedule> {
+
+        @Override
+        public int compare(FlightSchedule o1, FlightSchedule o2) {
+            if (o1.getDepartureDateTime().compareTo(o2.getDepartureDateTime()) > 0) {
+                return 1;
+            } else if (o1.getDepartureDateTime().compareTo(o2.getDepartureDateTime()) < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    public static class ConnectingFlightScheduleComparator implements Comparator<Pair<FlightSchedule, FlightSchedule>> {
+
+        @Override
+        public int compare(Pair<FlightSchedule, FlightSchedule> p1, Pair<FlightSchedule, FlightSchedule> p2) {
+            if (p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime()) > 0) {
+                return 1;
+            } else if (p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime()) < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+
     }
 
 }

@@ -20,5 +20,9 @@ public interface FlightSessionBeanLocal {
     public List<Flight> retrieveFlightByFlightRouteId(Long routeId) throws FlightRouteNotFoundException;
 
     public Flight retrieveFlightById(Long flightId) throws FlightNotFoundException;
-    
+
+    public List<Flight> retrieveAllFlightByRoute(String origin, String destination) throws FlightNotFoundException;
+
+    public List<Flight[]> retrieveAllIndirectFlightByFlightRoute(String originIATACode, String destinationIATACode) throws FlightNotFoundException;
+
 }

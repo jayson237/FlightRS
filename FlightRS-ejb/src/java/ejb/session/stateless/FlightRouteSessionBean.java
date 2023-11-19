@@ -68,7 +68,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
                 em.flush();
                 return flightRoute;
             } catch (AirportNotFoundException ex) {
-                throw new AirportNotFoundException("There is no such airport");
+                throw new AirportNotFoundException("There is no such origin or destination airport");
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null
                         && ex.getCause().getCause() != null
@@ -85,7 +85,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
 
     @Override
     public List<FlightRoute> retrieveAllFlightRoutes() {
-        Query q = em.createQuery("SELECT fr FROM FlightRoute fr ORDER BY fr.originAirport.airportCode ASC");
+        Query q = em.createQuery("SELECT fr FROM FlightRoute fr WHERE fr.isDisabled = false ORDER BY fr.originAirport.airportCode ASC");
         List<FlightRoute> flightRoutes = q.getResultList();
         List<FlightRoute> sortedRoutes = new ArrayList<>();
 
@@ -152,7 +152,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         }
         List<Flight> flights = flightSessionBean.retrieveFlightByFlightRouteId(flightRoute.getFlightRouteId());
 
-        if (flights.isEmpty()) {
+        if (flights.isEmpty() && !flightRoute.isHasReturnFlight()) {
             em.remove(flightRoute);
             return true;
         } else {

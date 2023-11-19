@@ -100,6 +100,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
     }
 
+
     @Override
     public boolean retrieveRouteStatus(String origin, String destination) throws AirportNotFoundException, FlightRouteNotFoundException {
         Airport originAirport = airportSessionBean.retrieveAirportByCode(origin);
@@ -128,6 +129,33 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         }
 
         return sortedFlights;
+    }
+    
+    @Override
+    public List<Flight> retrieveAllFlightByRoute(String origin, String destination) throws FlightNotFoundException {
+        Query query = em.createQuery("SELECT f FROM Flight f WHERE f.disabled = false AND f.flightRoute.originAirport.airportCode =: origin AND f.flightRoute.destinationAirport.airportCode =: destination ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+        query.setParameter("origin", origin);
+        query.setParameter("destination", destination);
+        List<Flight> flightResult =  query.getResultList();
+        if (flightResult.isEmpty()) {
+            throw new FlightNotFoundException("No flights with flight route from " + origin + " to " +  destination + " found");
+        } else {
+            return flightResult;
+        }
+    }
+    
+    @Override
+    public List<Flight[]> retrieveAllIndirectFlightByFlightRoute(String originIATACode, String destinationIATACode) throws FlightNotFoundException {
+        Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 WHERE f1.disabled = false AND f2.disabled = false AND "
+                + "f1.flightRoute.originAirport.airportCode = :origin AND f2.flightRoute.destinationAirport.airportCode= :destination AND "
+                + "f1.flightRoute.destinationAirport.airportCode = f2.flightRoute.originAirport.airportCode");
+        query.setParameter("origin", originIATACode);
+        query.setParameter("destination", destinationIATACode);
+        List<Flight[]> resultFlight =  query.getResultList();
+        if (resultFlight.isEmpty()) {
+            throw new FlightNotFoundException("No connecting flights with flight route from " + originIATACode + " to " +  destinationIATACode + " found");
+        }
+        return resultFlight;
     }
 
     private Flight findReturnFlight(List<Flight> flights, Flight flight) {
@@ -189,11 +217,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         if (flightToRemove == null) {
             throw new FlightNotFoundException("Flight id: " + flightId + " cannot be deleted because it does not exist");
         }
-        FlightRoute flightRoute = flightRouteSessionBean.retrieveFlightRouteByFlightId(flightId);
+//        FlightRoute flightRoute = flightRouteSessionBean.retrieveFlightRouteByFlightId(flightId);
 
         List<FlightSchedulePlan> schedulePlan = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanByFlightId(flightId);
 
-        if (flightRoute == null && schedulePlan.isEmpty()) {
+        if (schedulePlan.isEmpty() && flightToRemove.getReturnFlightNumber() == null) {
             em.remove(flightToRemove);
             return true;
         } else {

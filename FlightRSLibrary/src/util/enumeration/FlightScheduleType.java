@@ -9,5 +9,5 @@ package util.enumeration;
  * @author timothy
  */
 public enum FlightScheduleType {
-    MANUALSINGLE, MANUALMULTIPLE, RECURRENTNDAY, RECURRENTWEEKLY
+    MANUALSINGLE, MANUALMULTIPLE, RECURRENTNDAY, RECURRENTWEEKLY;
 }

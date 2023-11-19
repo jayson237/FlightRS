@@ -5,7 +5,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,10 +12,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassType;
 
 /**
@@ -31,31 +30,36 @@ public class CabinClass implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private CabinClassType type;
 
     @Column(nullable = false)
     @Min(0)
     @Max(2)
+    @NotNull
     private Integer numberOfAisles;
 
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfRows;
 
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfSeatsAbreast;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 5)
+    @NotNull
     private String seatingConfiguration;
 
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer maxCapacity;
-
-    @OneToMany(mappedBy = "cabinClass")
-    private List<Fare> fares;
-
-    @OneToOne(optional = false)
-    private SeatInventory inventory;
 
     public CabinClass() {
     }
@@ -123,22 +127,6 @@ public class CabinClass implements Serializable {
 
     public void setSeatingConfiguration(String seatingConfiguration) {
         this.seatingConfiguration = seatingConfiguration;
-    }
-
-    public List<Fare> getFares() {
-        return fares;
-    }
-
-    public void setFares(List<Fare> fares) {
-        this.fares = fares;
-    }
-
-    public SeatInventory getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(SeatInventory inventory) {
-        this.inventory = inventory;
     }
 
     @Override

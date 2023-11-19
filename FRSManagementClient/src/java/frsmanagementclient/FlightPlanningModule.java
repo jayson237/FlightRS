@@ -163,17 +163,11 @@ public class FlightPlanningModule {
             } catch (Exception ex) {
                 System.out.println(ex.getMessage() + "\n");
             }
-//            catch (AircraftTypeNotFoundException ex) {
-//                System.out.println("Aircraft type does not exist");
-//            } catch (CabinClassExistException ex) {
-//                System.out.println("Detected cabin class that already exist\n");
-//            } catch (AircraftConfigurationExistException ex) {
-//                System.out.println("Aircraft configuration already exist\n");
-//            } catch (GeneralException ex) {
-//                System.out.println(ex.getMessage() + "\n");
-//            } catch (InputDataValidationException ex) {
-//                System.out.println(ex.getMessage() + "\n");
-//            }
+
+        } else if (cabinClassCap > configMaxCap) {
+            System.out.println("Cabin classes' capacity exceeded the max configuration capacity");
+        } else if (cabinClassCap < configMaxCap) {
+            System.out.println("Cabin classes' capacity has not reach the max configuration capacity");
         } else {
             showInputDataValidationErrorsForAircraftConfiguration(constraintViolations);
         }
@@ -185,7 +179,7 @@ public class FlightPlanningModule {
             int size = airConfigs.size();
             for (int i = 0; i < size; i++) {
                 AircraftConfiguration ac = airConfigs.get(i);
-                System.out.println("ID: " + ac.getAircraftConfigurationId()
+                System.out.println(i + 1 + ": " + "Aircraft Type: " + ac.getAircraft().getName()
                         + ", Name: " + ac.getName());
 
                 if (i == size - 1) {
@@ -254,15 +248,6 @@ public class FlightPlanningModule {
             } catch (Exception ex) {
                 System.out.println(ex.getMessage() + "\n");
             }
-//            catch (AirportNotFoundException ex) {
-//                System.out.println("Airport does not exist\n");
-//            } catch (FlightRouteExistException ex) {
-//                System.out.println("Such flight route already exist\n");
-//            } catch (GeneralException ex) {
-//                System.out.println(ex.getMessage() + "\n");
-//            } catch (InputDataValidationException ex) {
-//                System.out.println(ex.getMessage() + "\n");
-//            }
         } else {
             showInputDataValidationErrorsForFlightRoute(constraintViolations);
         }
@@ -274,8 +259,8 @@ public class FlightPlanningModule {
             int size = routes.size();
             for (int i = 0; i < size; i++) {
                 FlightRoute fr = routes.get(i);
-                System.out.println("ID: " + fr.getFlightRouteId()
-                        + ", Origin: " + fr.getOriginAirport().getAirportCode()
+                System.out.println(i + 1 + ": "
+                        + "Origin: " + fr.getOriginAirport().getAirportCode()
                         + ", Destination: " + fr.getDestinationAirport().getAirportCode());
 
                 if (i == size - 1) {
@@ -283,7 +268,7 @@ public class FlightPlanningModule {
                 }
             }
         } else {
-            System.out.println("There is no existing Aircraft Configuration record\n");
+            System.out.println("There is no existing Flight Route record\n");
         }
     }
 
@@ -299,11 +284,6 @@ public class FlightPlanningModule {
         } catch (Exception ex) {
             System.out.println(ex.getMessage() + "\n");
         }
-//        catch (FlightRouteNotFoundException ex) {
-//            System.out.println("Flight route id: " + id + " does not exist\n");
-//        } catch (DeleteFlightRouteException ex) {
-//            System.out.println("Flight route id: " + id + " is in use and cannot be deleted! It will be disabled");
-//        }
     }
 
     private void showInputDataValidationErrorsForAircraftConfiguration(Set<ConstraintViolation<AircraftConfiguration>> constraintViolations) {

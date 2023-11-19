@@ -21,4 +21,5 @@ public interface FlightSchedulePlanSessionBeanLocal {
 
     public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException;
     
+    
 }

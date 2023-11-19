@@ -12,6 +12,7 @@ import util.exception.AircraftConfigurationExistException;
 import util.exception.AircraftConfigurationNotFoundException;
 import util.exception.AircraftTypeNotFoundException;
 import util.exception.CabinClassExistException;
+import util.exception.ConfigurationExceedCapacity;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
 
@@ -24,7 +25,7 @@ public interface AircraftConfigurationSessionBeanRemote {
 
     public AircraftConfiguration retrieveAirConfigByName(String aircraftConfig) throws AircraftConfigurationNotFoundException;
 
-    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException;
+    public AircraftConfiguration createNewAircraftConfig(AircraftConfiguration config, List<CabinClass> cabinClasses) throws ConfigurationExceedCapacity, CabinClassExistException, AircraftTypeNotFoundException, AircraftConfigurationExistException, GeneralException, InputDataValidationException;
 
     public List<AircraftConfiguration> retrieveAllAirConfigurations();
 

@@ -7,16 +7,22 @@ package entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import util.enumeration.CabinClassType;
 
 /**
  *
@@ -31,23 +37,42 @@ public class FlightReservation implements Serializable {
     private Long flightReservationId;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private CabinClassType cabinClassType;
+
+    @Column(nullable = false, length = 7)
+    @Size(min = 3, max = 7)
+    @NotNull
+    private String fareBasisCode;
+
+    @Column(nullable = false, scale = 2, precision = 11)
+    @DecimalMin("0.00")
+    @NotNull
     private BigDecimal totalAmount;
 
-    @ManyToMany(mappedBy = "flightReservations", cascade = {}, fetch = FetchType.LAZY)
-    private List<FlightSchedule> itinerary;
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
+    private Transaction transaction;
 
-    @OneToMany(mappedBy = "flightReservation")
-    private List<Passenger> passengers;
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
+    private FlightSchedule flightSchedule;
 
-    @ManyToOne
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
     @JoinColumn(nullable = false)
     private Customer customer;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    private List<Passenger> passengers;
 
     public FlightReservation() {
     }
 
-    public FlightReservation(BigDecimal totalAmount) {
+    public FlightReservation(String fareBasisCode, BigDecimal totalAmount, CabinClassType cabinClassType) {
+        this.fareBasisCode = fareBasisCode;
         this.totalAmount = totalAmount;
+        this.cabinClassType = cabinClassType;
     }
 
     public Long getFlightReservationId() {
@@ -66,20 +91,44 @@ public class FlightReservation implements Serializable {
         this.totalAmount = totalAmount;
     }
 
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
+    }
+
     public List<Passenger> getPassengers() {
         return passengers;
     }
 
-    public List<FlightSchedule> getItinerary() {
-        return itinerary;
-    }
-
-    public void setItinerary(List<FlightSchedule> itinerary) {
-        this.itinerary = itinerary;
-    }
-
     public void setPassengers(List<Passenger> passengers) {
         this.passengers = passengers;
+    }
+
+    public CabinClassType getCabinClassType() {
+        return cabinClassType;
+    }
+
+    public void setCabinClassType(CabinClassType cabinClassType) {
+        this.cabinClassType = cabinClassType;
+    }
+
+    public String getFareBasisCode() {
+        return fareBasisCode;
+    }
+
+    public void setFareBasisCode(String fareBasisCode) {
+        this.fareBasisCode = fareBasisCode;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
     }
 
     public Customer getCustomer() {

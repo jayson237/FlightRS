@@ -1,17 +1,20 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -26,16 +29,31 @@ public class SeatInventory implements Serializable {
     private Long seatInventoryId;
 
     @Column(nullable = false)
+    @Min(0)
+    @NotNull
     private Integer availableSeats;
 
     @Column(nullable = false)
+    @Min(0)
+    @NotNull
     private Integer reservedSeats;
 
     @Column(nullable = false)
+    @Min(0)
+    @NotNull
     private Integer balanceSeats;
 
-    @OneToMany
-    private List<Seat> seats;
+    @Column(nullable = false)
+    @NotNull
+    private char[][] seats;
+
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
+    private CabinClass cabin;
+
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
+    private FlightSchedule flightSchedule;
 
     public SeatInventory() {
 
@@ -79,12 +97,28 @@ public class SeatInventory implements Serializable {
         this.balanceSeats = balanceSeats;
     }
 
-    public List<Seat> getSeats() {
+    public char[][] getSeats() {
         return seats;
     }
 
-    public void setSeats(List<Seat> seats) {
+    public void setSeats(char[][] seats) {
         this.seats = seats;
+    }
+
+    public CabinClass getCabin() {
+        return cabin;
+    }
+
+    public void setCabin(CabinClass cabin) {
+        this.cabin = cabin;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
     }
 
     @Override

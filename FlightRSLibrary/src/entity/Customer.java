@@ -6,8 +6,10 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,6 +44,9 @@ public class Customer implements Serializable {
 
     @Column(length = 32, nullable = false)
     private String password;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", cascade = CascadeType.DETACH)
+    private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "customer")
     private List<FlightReservation> flightReservations;
@@ -108,6 +113,14 @@ public class Customer implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     public void setPassword(String password) {

@@ -22,27 +22,23 @@ public class Partner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long partnerId;
-    
+
     @Column(length = 32, nullable = false)
     private String name;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String email;
-    
+
     @Column(length = 32, nullable = false)
     private String password;
-    
-//    @Enumerated(EnumType.STRING)
-//    private PartnerRole role;
 
-    public Partner() {  
+    public Partner() {
     }
 
     public Partner(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-//        this.role = role;
     }
 
     public Long getPartnerId() {
@@ -76,14 +72,6 @@ public class Partner implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-
-//    public PartnerRole getRole() {
-//        return role;
-//    }
-//
-//    public void setRole(PartnerRole role) {
-//        this.role = role;
-//    }
 
     @Override
     public int hashCode() {
