@@ -5,17 +5,18 @@
 package entity;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Aircraft implements Serializable {
@@ -24,12 +25,16 @@ public class Aircraft implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftId;
+    
     @Column(length = 32, nullable = false, unique = true)
+    @Size (min = 1, max = 32)
+    @NotNull
     private String name;
+    
     @Column(nullable = false)
+    @Min(0)
+    @NotNull
     private Integer maxCapacity;
-    @OneToMany(mappedBy = "aircraft")
-    private List<AircraftConfiguration> aircraftConfigurations;
 
     public Aircraft() {
     }
@@ -45,6 +50,22 @@ public class Aircraft implements Serializable {
 
     public void setAircraftId(Long aircraftId) {
         this.aircraftId = aircraftId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(Integer maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     @Override
@@ -72,46 +93,4 @@ public class Aircraft implements Serializable {
         return "entity.Aircraft[ id=" + aircraftId + " ]";
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the maxCapacity
-     */
-    public Integer getMaxCapacity() {
-        return maxCapacity;
-    }
-
-    /**
-     * @param maxCapacity the maxCapacity to set
-     */
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
-
-    /**
-     * @return the aircraftConfigurations
-     */
-    public List<AircraftConfiguration> getAircraftConfigurations() {
-        return aircraftConfigurations;
-    }
-
-    /**
-     * @param aircraftConfigurations the aircraftConfigurations to set
-     */
-    public void setAircraftConfigurations(List<AircraftConfiguration> aircraftConfigurations) {
-        this.aircraftConfigurations = aircraftConfigurations;
-    }
-    
 }

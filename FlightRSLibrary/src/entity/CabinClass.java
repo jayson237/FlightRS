@@ -12,55 +12,59 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassType;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class CabinClass implements Serializable {
-
-    /**
-     * @return the aircraftConfiguration
-     */
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    /**
-     * @param aircraftConfiguration the aircraftConfiguration to set
-     */
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
-    }
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
-    @Enumerated (EnumType.STRING)
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull
     private CabinClassType type;
+
     @Column(nullable = false)
+    @Min(0)
+    @Max(2)
+    @NotNull
     private Integer numberOfAisles;
+
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfRows;
+
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfSeatsAbreast;
+
     @Column(nullable = false)
-    private Integer maxCapacity;
-    @Column(nullable = false)
+    @Size(min = 1, max = 5)
+    @NotNull
     private String seatingConfiguration;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "aircraft_configuration_id", nullable = false)
-    private AircraftConfiguration aircraftConfiguration;
+
+    @Column(nullable = false)
+    @Min(1)
+    @NotNull
+    private Integer maxCapacity;
 
     public CabinClass() {
     }
 
-    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, Integer maxCapacity, String seatingConfiguration) {
+    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, String seatingConfiguration, Integer maxCapacity) {
         this.type = type;
         this.numberOfAisles = numberOfAisles;
         this.numOfRows = numOfRows;
@@ -75,6 +79,54 @@ public class CabinClass implements Serializable {
 
     public void setCabinClassId(Long cabinClassId) {
         this.cabinClassId = cabinClassId;
+    }
+
+    public CabinClassType getType() {
+        return type;
+    }
+
+    public void setType(CabinClassType type) {
+        this.type = type;
+    }
+
+    public Integer getNumberOfAisles() {
+        return numberOfAisles;
+    }
+
+    public void setNumberOfAisles(Integer numberOfAisles) {
+        this.numberOfAisles = numberOfAisles;
+    }
+
+    public Integer getNumOfRows() {
+        return numOfRows;
+    }
+
+    public void setNumOfRows(Integer numOfRows) {
+        this.numOfRows = numOfRows;
+    }
+
+    public Integer getNumOfSeatsAbreast() {
+        return numOfSeatsAbreast;
+    }
+
+    public void setNumOfSeatsAbreast(Integer numOfSeatsAbreast) {
+        this.numOfSeatsAbreast = numOfSeatsAbreast;
+    }
+
+    public Integer getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(Integer maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
+
+    public String getSeatingConfiguration() {
+        return seatingConfiguration;
+    }
+
+    public void setSeatingConfiguration(String seatingConfiguration) {
+        this.seatingConfiguration = seatingConfiguration;
     }
 
     @Override
@@ -102,88 +154,4 @@ public class CabinClass implements Serializable {
         return "entity.CabinClass[ id=" + cabinClassId + " ]";
     }
 
-    /**
-     * @return the type
-     */
-    public CabinClassType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(CabinClassType type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the numberOfAisles
-     */
-    public Integer getNumberOfAisles() {
-        return numberOfAisles;
-    }
-
-    /**
-     * @param numberOfAisles the numberOfAisles to set
-     */
-    public void setNumberOfAisles(Integer numberOfAisles) {
-        this.numberOfAisles = numberOfAisles;
-    }
-
-    /**
-     * @return the numOfRows
-     */
-    public Integer getNumOfRows() {
-        return numOfRows;
-    }
-
-    /**
-     * @param numOfRows the numOfRows to set
-     */
-    public void setNumOfRows(Integer numOfRows) {
-        this.numOfRows = numOfRows;
-    }
-
-    /**
-     * @return the numOfSeatsAbreast
-     */
-    public Integer getNumOfSeatsAbreast() {
-        return numOfSeatsAbreast;
-    }
-
-    /**
-     * @param numOfSeatsAbreast the numOfSeatsAbreast to set
-     */
-    public void setNumOfSeatsAbreast(Integer numOfSeatsAbreast) {
-        this.numOfSeatsAbreast = numOfSeatsAbreast;
-    }
-
-    /**
-     * @return the maxCapacity
-     */
-    public Integer getMaxCapacity() {
-        return maxCapacity;
-    }
-
-    /**
-     * @param maxCapacity the maxCapacity to set
-     */
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
-    }
-
-    /**
-     * @return the seatingConfiguration
-     */
-    public String getSeatingConfiguration() {
-        return seatingConfiguration;
-    }
-
-    /**
-     * @param seatingConfiguration the seatingConfiguration to set
-     */
-    public void setSeatingConfiguration(String seatingConfiguration) {
-        this.seatingConfiguration = seatingConfiguration;
-    }
-    
 }

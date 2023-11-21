@@ -14,10 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import util.enumeration.EmployeeRole;
 
-
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Employee implements Serializable {
@@ -26,21 +25,25 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
+    
     @Column(length = 32, nullable = false)
     private String name;
+    
     @Column(length = 32, nullable = false, unique = true)
-    private String username;
+    private String email;
+    
     @Column(length = 32, nullable = false)
     private String password;
+    
     @Enumerated(EnumType.STRING)
     private EmployeeRole employeeRole;
 
     public Employee() {
     }
 
-    public Employee(String name, String username, String password, EmployeeRole employeeRole) {
+    public Employee(String name, String email, String password, EmployeeRole employeeRole) {
         this.name = name;
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.employeeRole = employeeRole;
     }
@@ -51,6 +54,38 @@ public class Employee implements Serializable {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public EmployeeRole getemployeeRole() {
+        return employeeRole;
+    }
+
+    public void setEmployeeRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
     }
 
     @Override
@@ -78,56 +113,4 @@ public class Employee implements Serializable {
         return "entity.Employee[ id=" + employeeId + " ]";
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    
-    public EmployeeRole getemployeeRole() {
-        return employeeRole;
-    }
-
-    
-    public void setEmployeeRole(EmployeeRole employeeRole) {
-        this.employeeRole = employeeRole;
-    }
-    
 }

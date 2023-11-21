@@ -7,16 +7,13 @@ package entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import util.enumeration.PartnerRole;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Partner implements Serializable {
@@ -25,23 +22,23 @@ public class Partner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long partnerId;
+
     @Column(length = 32, nullable = false)
     private String name;
+
     @Column(length = 32, nullable = false, unique = true)
-    private String username;
+    private String email;
+
     @Column(length = 32, nullable = false)
     private String password;
-    @Enumerated(EnumType.STRING)
-    private PartnerRole role;
 
     public Partner() {
     }
 
-    public Partner(String name, String username, String password, PartnerRole role) {
+    public Partner(String name, String email, String password) {
         this.name = name;
-        this.username = username;
+        this.email = email;
         this.password = password;
-        this.role = role;
     }
 
     public Long getPartnerId() {
@@ -50,6 +47,30 @@ public class Partner implements Serializable {
 
     public void setPartnerId(Long partnerId) {
         this.partnerId = partnerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
@@ -77,60 +98,4 @@ public class Partner implements Serializable {
         return "entity.Partner[ id=" + partnerId + " ]";
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * @param username the username to set
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password the password to set
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * @return the role
-     */
-    public PartnerRole getRole() {
-        return role;
-    }
-
-    /**
-     * @param role the role to set
-     */
-    public void setRole(PartnerRole role) {
-        this.role = role;
-    }
-    
 }

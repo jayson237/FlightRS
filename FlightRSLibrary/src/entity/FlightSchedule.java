@@ -5,20 +5,29 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import javafx.util.Pair;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class FlightSchedule implements Serializable {
@@ -27,25 +36,40 @@ public class FlightSchedule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightScheduleId;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date departureDateTime;
+
     @Column(nullable = false)
-    private Integer estimatedDuration;
+    @Min(0)
+    @Max(24)
+    private double estimatedDuration;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date arrivalDateTime;
-    @ManyToOne
-    @JoinColumn(name = "flight_schedule_plan_id")
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
-    
+
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    private List<SeatInventory> seatInventory;
+
+    @OneToMany(mappedBy = "flightSchedule", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    private List<FlightReservation> flightReservations;
+
     public FlightSchedule() {
+        this.seatInventory = new ArrayList<>();
+        this.flightReservations = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDateTime, Integer estimatedDuration, Date arrivalDateTime) {
+    public FlightSchedule(Date departureDateTime, double estimatedDuration, Date arrivalDateTime) {
+        this();
         this.departureDateTime = departureDateTime;
         this.estimatedDuration = estimatedDuration;
-        this.arrivalDateTime = new Date(departureDateTime.getTime() + (estimatedDuration * 60 * 1000));
+        this.arrivalDateTime = arrivalDateTime;
     }
 
     public Long getFlightScheduleId() {
@@ -54,6 +78,54 @@ public class FlightSchedule implements Serializable {
 
     public void setFlightScheduleId(Long flightScheduleId) {
         this.flightScheduleId = flightScheduleId;
+    }
+
+    public Date getDepartureDateTime() {
+        return departureDateTime;
+    }
+
+    public void setDepartureDateTime(Date departureDateTime) {
+        this.departureDateTime = departureDateTime;
+    }
+
+    public double getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    public void setEstimatedDuration(double estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
+    }
+
+    public Date getArrivalDateTime() {
+        return arrivalDateTime;
+    }
+
+    public void setArrivalDateTime(Date arrivalDateTime) {
+        this.arrivalDateTime = arrivalDateTime;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+
+    public List<SeatInventory> getSeatInventory() {
+        return seatInventory;
+    }
+
+    public void setSeatInventory(List<SeatInventory> seatInventory) {
+        this.seatInventory = seatInventory;
+    }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
     }
 
     @Override
@@ -81,60 +153,33 @@ public class FlightSchedule implements Serializable {
         return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
     }
 
-    /**
-     * @return the departureDateTime
-     */
-    public Date getDepartureDateTime() {
-        return departureDateTime;
+    public static class FlightScheduleComparator implements Comparator<FlightSchedule> {
+
+        @Override
+        public int compare(FlightSchedule o1, FlightSchedule o2) {
+            if (o1.getDepartureDateTime().compareTo(o2.getDepartureDateTime()) > 0) {
+                return 1;
+            } else if (o1.getDepartureDateTime().compareTo(o2.getDepartureDateTime()) < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
     }
 
-    /**
-     * @param departureDateTime the departureDateTime to set
-     */
-    public void setDepartureDateTime(Date departureDateTime) {
-        this.departureDateTime = departureDateTime;
+    public static class ConnectingFlightScheduleComparator implements Comparator<Pair<FlightSchedule, FlightSchedule>> {
+
+        @Override
+        public int compare(Pair<FlightSchedule, FlightSchedule> p1, Pair<FlightSchedule, FlightSchedule> p2) {
+            if (p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime()) > 0) {
+                return 1;
+            } else if (p1.getKey().getDepartureDateTime().compareTo(p2.getKey().getDepartureDateTime()) < 0) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+
     }
 
-    /**
-     * @return the estimatedDuration
-     */
-    public Integer getEstimatedDuration() {
-        return estimatedDuration;
-    }
-
-    /**
-     * @param estimatedDuration the estimatedDuration to set
-     */
-    public void setEstimatedDuration(Integer estimatedDuration) {
-        this.estimatedDuration = estimatedDuration;
-    }
-
-    /**
-     * @return the arrivalDateTime
-     */
-    public Date getArrivalDateTime() {
-        return arrivalDateTime;
-    }
-
-    /**
-     * @param arrivalDateTime the arrivalDateTime to set
-     */
-    public void setArrivalDateTime(Date arrivalDateTime) {
-        this.arrivalDateTime = arrivalDateTime;
-    }
-
-    /**
-     * @return the flightSchedulePlan
-     */
-    public FlightSchedulePlan getFlightSchedulePlan() {
-        return flightSchedulePlan;
-    }
-
-    /**
-     * @param flightSchedulePlan the flightSchedulePlan to set
-     */
-    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        this.flightSchedulePlan = flightSchedulePlan;
-    }
-    
 }

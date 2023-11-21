@@ -5,19 +5,23 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 @Entity
 public class Flight implements Serializable {
@@ -26,20 +30,39 @@ public class Flight implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightId;
+
     @Column(length = 32, nullable = false, unique = true)
+    @Size(min = 5, max = 32)
+    @NotNull
     private String flightNumber;
-    @OneToOne(mappedBy = "flight")
-    private FlightSchedulePlan flightSchedulePlans;
-    @OneToOne (optional = false)
+
+    @Column(nullable = false)
+    @NotNull
+    private boolean isDisabled;
+
+    @Column
+    private String returnFlightNumber;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
-    @OneToMany
+
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
 
+    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
+    private List<FlightSchedulePlan> flightSchedulePlans;
+
     public Flight() {
+        this.flightSchedulePlans = new ArrayList<>();
     }
 
-    public Flight(String flightNumber) {
+    public Flight(String flightNumber, boolean isDisabled, String returnFLightNumber) {
+        this();
         this.flightNumber = flightNumber;
+        this.isDisabled = isDisabled;
+        this.returnFlightNumber = returnFLightNumber;
     }
 
     public Long getFlightId() {
@@ -48,6 +71,54 @@ public class Flight implements Serializable {
 
     public void setFlightId(Long flightId) {
         this.flightId = flightId;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
+    }
+
+    public String getReturnFlightNumber() {
+        return returnFlightNumber;
+    }
+
+    public void setReturnFlightNumber(String returnFlightNumber) {
+        this.returnFlightNumber = returnFlightNumber;
+    }
+
+    public FlightRoute getFlightRoute() {
+        return flightRoute;
+    }
+
+    public void setFlightRoute(FlightRoute flightRoute) {
+        this.flightRoute = flightRoute;
+    }
+
+    public List<FlightSchedulePlan> getFlightSchedulePlans() {
+        return flightSchedulePlans;
+    }
+
+    public void setFlightSchedulePlans(List<FlightSchedulePlan> flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
+    }
+
+    public AircraftConfiguration getAircraftConfiguration() {
+        return aircraftConfiguration;
+    }
+
+    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
+        this.aircraftConfiguration = aircraftConfiguration;
     }
 
     @Override
@@ -75,60 +146,4 @@ public class Flight implements Serializable {
         return "entity.Flight[ id=" + flightId + " ]";
     }
 
-    /**
-     * @return the flightNumber
-     */
-    public String getFlightNumber() {
-        return flightNumber;
-    }
-
-    /**
-     * @param flightNumber the flightNumber to set
-     */
-    public void setFlightNumber(String flightNumber) {
-        this.flightNumber = flightNumber;
-    }
-
-    /**
-     * @return the flightSchedulePlans
-     */
-    public FlightSchedulePlan getFlightSchedulePlans() {
-        return flightSchedulePlans;
-    }
-
-    /**
-     * @param flightSchedulePlans the flightSchedulePlans to set
-     */
-    public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
-        this.flightSchedulePlans = flightSchedulePlans;
-    }
-
-    /**
-     * @return the flightRoute
-     */
-    public FlightRoute getFlightRoute() {
-        return flightRoute;
-    }
-
-    /**
-     * @param flightRoute the flightRoute to set
-     */
-    public void setFlightRoute(FlightRoute flightRoute) {
-        this.flightRoute = flightRoute;
-    }
-
-    /**
-     * @return the aircraftConfiguration
-     */
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    /**
-     * @param aircraftConfiguration the aircraftConfiguration to set
-     */
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
-    }
-    
 }
