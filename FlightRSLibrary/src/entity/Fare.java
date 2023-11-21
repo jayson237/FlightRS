@@ -6,6 +6,8 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,9 +34,8 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
 
-    @Column(length = 7, nullable = false, unique = true)
+    @Column(length = 7)
     @Size(min = 3, max = 7)
-    @NotNull
     private String fareCode;
 
     @Column(precision = 11, scale = 2, nullable = false)
@@ -48,15 +48,23 @@ public class Fare implements Serializable {
     @NotNull
     private CabinClassType cabinClassType;
 
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
-    @JoinColumn(nullable = false)
-    private FlightSchedulePlan flightSchedulePlan;
+    @ManyToMany(mappedBy = "fares", cascade = CascadeType.DETACH)
+    private List<FlightSchedulePlan> flightSchedulePlans;
 
     public Fare() {
+        this.flightSchedulePlans = new ArrayList<>();
     }
 
     public Fare(String fareCode, BigDecimal amount, CabinClassType cabinClassType) {
+        this();
         this.fareCode = fareCode;
+        this.amount = amount;
+        this.cabinClassType = cabinClassType;
+    }
+
+    public Fare(BigDecimal amount, CabinClassType cabinClassType) {
+        this();
+        this.fareCode = null;
         this.amount = amount;
         this.cabinClassType = cabinClassType;
     }
@@ -93,12 +101,12 @@ public class Fare implements Serializable {
         this.cabinClassType = cabinClassType;
     }
 
-    public FlightSchedulePlan getFlightSchedulePlan() {
-        return flightSchedulePlan;
+    public List<FlightSchedulePlan> getFlightSchedulePlans() {
+        return flightSchedulePlans;
     }
 
-    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
-        this.flightSchedulePlan = flightSchedulePlan;
+    public void setFlightSchedulePlans(List<FlightSchedulePlan> flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
     }
 
     @Override

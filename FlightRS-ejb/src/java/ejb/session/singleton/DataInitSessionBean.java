@@ -22,7 +22,7 @@ import util.enumeration.EmployeeRole;
  */
 @Singleton
 @LocalBean
-@Startup
+//@Startup
 public class DataInitSessionBean {
 
     @PersistenceContext(unitName = "FlightRS-ejbPU")

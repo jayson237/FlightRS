@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,9 +57,11 @@ public class AircraftConfiguration implements Serializable {
     private List<CabinClass> cabinClasses;
 
     public AircraftConfiguration() {
+        this.cabinClasses = new ArrayList<>();
     }
 
     public AircraftConfiguration(String name, Integer numOfCabinClass, Integer maxSeats) {
+        this();
         this.name = name;
         this.numOfCabinClass = numOfCabinClass;
         this.maxSeats = maxSeats;

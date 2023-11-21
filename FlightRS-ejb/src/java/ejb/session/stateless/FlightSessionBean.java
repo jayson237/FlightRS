@@ -133,7 +133,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     
     @Override
     public List<Flight> retrieveAllFlightByRoute(String origin, String destination) throws FlightNotFoundException {
-        Query query = em.createQuery("SELECT f FROM Flight f WHERE f.disabled = false AND f.flightRoute.originAirport.airportCode = :origin AND f.flightRoute.destinationAirport.airportCode = :destination ORDER BY SUBSTRING(f.flightNum, 3) ASC");
+        Query query = em.createQuery("SELECT f FROM Flight f WHERE f.isDisabled = false AND f.flightRoute.originAirport.airportCode = :origin AND f.flightRoute.destinationAirport.airportCode = :destination ORDER BY SUBSTRING(f.flightNumber, 3) ASC");
         query.setParameter("origin", origin);
         query.setParameter("destination", destination);
         List<Flight> flightResult =  query.getResultList();
@@ -146,7 +146,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
     
     @Override
     public List<Flight[]> retrieveAllIndirectFlightByFlightRoute(String originIATACode, String destinationIATACode) throws FlightNotFoundException {
-        Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 WHERE f1.disabled = false AND f2.disabled = false AND "
+        Query query = em.createQuery("SELECT f1, f2 FROM Flight f1, Flight f2 WHERE f1.isDisabled = false AND f2.isDisabled = false AND "
                 + "f1.flightRoute.originAirport.airportCode = :origin AND f2.flightRoute.destinationAirport.airportCode= :destination AND "
                 + "f1.flightRoute.destinationAirport.airportCode = f2.flightRoute.originAirport.airportCode");
         query.setParameter("origin", originIATACode);

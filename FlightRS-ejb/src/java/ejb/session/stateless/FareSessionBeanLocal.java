@@ -9,6 +9,7 @@ import entity.FlightSchedulePlan;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.FareExistException;
+import util.exception.FareNotFoundException;
 import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 import util.exception.InputDataValidationException;
@@ -25,6 +26,6 @@ public interface FareSessionBeanLocal {
 
     public void deleteFares(List<Fare> fares);
 
-    public List<Fare> retrieveFareByPlanId(Long planId) throws FlightSchedulePlanNotFoundException;
+    public List<Fare> retrieveFareByPlanId(Long planId) throws FlightSchedulePlanNotFoundException, FareNotFoundException;
     
 }

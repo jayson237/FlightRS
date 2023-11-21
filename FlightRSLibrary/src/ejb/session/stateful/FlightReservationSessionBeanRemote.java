@@ -8,6 +8,7 @@ import entity.FlightReservation;
 import entity.Passenger;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.CustomerNotFoundException;
 import util.exception.FlightReservationExistException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InputDataValidationException;
@@ -18,11 +19,10 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author jayso
+ * @author timothy
  */
 @Remote
 public interface FlightReservationSessionBeanRemote {
-
-    public long createNewReservation(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long transactionId) throws TransactionNotFoundException, FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatBookedException, InputDataValidationException;
-
+    
+    public long createNewReservation(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long transactionId, long customerId) throws CustomerNotFoundException, TransactionNotFoundException, FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatBookedException, InputDataValidationException;
 }

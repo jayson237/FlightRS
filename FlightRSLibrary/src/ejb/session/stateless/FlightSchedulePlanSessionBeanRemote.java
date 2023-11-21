@@ -12,6 +12,7 @@ import javafx.util.Pair;
 import javax.ejb.Remote;
 import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FareExistException;
+import util.exception.FareNotFoundException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleExistException;
 import util.exception.FlightSchedulePlanExistException;
@@ -33,15 +34,17 @@ public interface FlightSchedulePlanSessionBeanRemote {
 
     public FlightSchedulePlan createNewFlightSchedulePlanMultiple(FlightSchedulePlan plan, List<Fare> fares, Long flightId, List<Pair<Date, Double>> info) throws FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
 
-    public FlightSchedulePlan createNewReturnFlightSchedulePlanMultiple(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, List<Pair<Date, Double>> info) throws FlightSchedulePlanExistException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
+    public FlightSchedulePlan createNewReturnFlightSchedulePlanMultiple(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, List<Pair<Date, Double>> info) throws FareNotFoundException, FlightSchedulePlanExistException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
 
-    public FlightSchedulePlan createNewReturnFlightSchedulePlan(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, InputDataValidationException, FareExistException, FlightScheduleExistException, UnknownPersistenceException, FlightSchedulePlanExistException, GeneralException;
+//    public FlightSchedulePlan createNewReturnFlightSchedulePlanWeekly(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FareNotFoundException, FlightSchedulePlanNotFoundException, FlightNotFoundException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
+
+    public FlightSchedulePlan createNewReturnFlightSchedulePlan(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FareNotFoundException, FlightNotFoundException, FlightSchedulePlanNotFoundException, InputDataValidationException, FareExistException, FlightScheduleExistException, UnknownPersistenceException, FlightSchedulePlanExistException, GeneralException;
+
+    public List<FlightSchedulePlan> retrieveFlightSchedulePlanByFlightNumber(String number) throws FlightNotFoundException, FlightSchedulePlanNotFoundException;
 
     public List<FlightSchedulePlan> retrieveAllFlightSchedulePlan();
 
     public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException;
-
-    public FlightSchedulePlan createNewReturnFlightSchedulePlanWeekly(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FlightSchedulePlanNotFoundException, FlightNotFoundException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException;
 
     public boolean deleteFlightSchedulePlan(Long flightSchedulePlanID) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException;
 

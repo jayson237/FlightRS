@@ -82,7 +82,7 @@ public class SalesManagementModule {
 
     private void doViewSeatsInventory(Scanner sc) {
         try {
-            System.out.println("=== View Seats Inventory ===");
+            System.out.println("=== Merlion FlighRS System:: View Seats Inventory ===");
             System.out.print("Enter Flight Number> ");
             String flightNum = sc.nextLine().trim();
             Flight flight = flightSessionBean.retrieveFlightByNumber(flightNum);
@@ -126,7 +126,6 @@ public class SalesManagementModule {
                 String cabinClassConfig = seatInventory.getCabin().getSeatingConfiguration();
 
                 CabinClassType type = seatInventory.getCabin().getType();
-                
 
                 System.out.println("Cabin Class" + type);
                 System.out.println("=============================");
@@ -240,7 +239,7 @@ public class SalesManagementModule {
                 );
             }
 
-            System.out.println("\nAll Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + "\n");
+            System.out.println("\nAll Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + ")\n");
             if (cabinTypes.isEmpty()) {
                 System.out.println("No existing reservations for this flight schedule\n");
             }

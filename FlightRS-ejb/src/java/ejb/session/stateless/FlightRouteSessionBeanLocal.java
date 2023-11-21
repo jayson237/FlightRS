@@ -7,8 +7,12 @@ package ejb.session.stateless;
 import entity.Airport;
 import entity.FlightRoute;
 import javax.ejb.Local;
+import util.exception.AirportNotFoundException;
 import util.exception.FlightNotFoundException;
+import util.exception.FlightRouteExistException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.GeneralException;
+import util.exception.InputDataValidationException;
 
 /**
  *
@@ -17,10 +21,12 @@ import util.exception.FlightRouteNotFoundException;
 @Local
 public interface FlightRouteSessionBeanLocal {
 
+    public FlightRoute createNewFlightRoute(FlightRoute flightRoute, String originAirportCode, String destinationAirportCode) throws AirportNotFoundException, FlightRouteExistException, GeneralException, InputDataValidationException;
+
     public FlightRoute retrieveflightRouteById(Long flightRouteId) throws FlightRouteNotFoundException;
 
     public FlightRoute retrieveflightRouteByAirport(Airport origin, Airport destination) throws FlightRouteNotFoundException;
 
     public FlightRoute retrieveFlightRouteByFlightId(Long flightId) throws FlightNotFoundException;
-    
+
 }

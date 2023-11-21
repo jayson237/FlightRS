@@ -18,6 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -62,7 +63,8 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private List<FlightSchedule> flightSchedules;
 
-    @OneToMany(mappedBy = "flightSchedulePlan", fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
     private List<Fare> fares;
 
     public FlightSchedulePlan() {

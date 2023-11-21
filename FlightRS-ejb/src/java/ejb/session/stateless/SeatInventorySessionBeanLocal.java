@@ -27,5 +27,7 @@ public interface SeatInventorySessionBeanLocal {
     public SeatInventory retrieveSeatsById(Long seatInventoryID) throws SeatInventoryNotFoundException;
 
     public void bookSeat(long seatInventoryId, String seatNumber) throws SeatInventoryNotFoundException, SeatBookedException;
-    
+
+    public boolean isBooked(SeatInventory seatInventory, String seatNumber);
+
 }
