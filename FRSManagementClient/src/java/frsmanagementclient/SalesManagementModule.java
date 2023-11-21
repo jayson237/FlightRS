@@ -16,7 +16,6 @@ import entity.Passenger;
 import entity.SeatInventory;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
@@ -25,9 +24,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.CabinClassType;
-import static util.enumeration.CabinClassType.J;
-import static util.enumeration.CabinClassType.Y;
-import util.exception.FlightNotFoundException;
 
 /**
  *
@@ -82,7 +78,7 @@ public class SalesManagementModule {
 
     private void doViewSeatsInventory(Scanner sc) {
         try {
-            System.out.println("=== View Seats Inventory ===");
+            System.out.println("=== Merlion FlighRS System:: View Seats Inventory ===");
             System.out.print("Enter Flight Number> ");
             String flightNum = sc.nextLine().trim();
             Flight flight = flightSessionBean.retrieveFlightByNumber(flightNum);
@@ -126,7 +122,6 @@ public class SalesManagementModule {
                 String cabinClassConfig = seatInventory.getCabin().getSeatingConfiguration();
 
                 CabinClassType type = seatInventory.getCabin().getType();
-                
 
                 System.out.println("Cabin Class" + type);
                 System.out.println("=============================");
@@ -240,7 +235,7 @@ public class SalesManagementModule {
                 );
             }
 
-            System.out.println("\nAll Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + "\n");
+            System.out.println("\nAll Reservations for Flight Schedule (ID: " + chosenFlightScheduleId + ")\n");
             if (cabinTypes.isEmpty()) {
                 System.out.println("No existing reservations for this flight schedule\n");
             }

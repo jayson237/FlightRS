@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -50,6 +51,7 @@ public class Transaction implements Serializable {
     private List<FlightReservation> flightReservations;
 
     public Transaction() {
+        this.flightReservations = new ArrayList<>();
     }
 
     public Transaction(String ccNumber, String cvv, Date ccExpiryDate) {

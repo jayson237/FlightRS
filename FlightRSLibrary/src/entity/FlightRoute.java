@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,9 +56,11 @@ public class FlightRoute implements Serializable {
     private List<Flight> flights;
 
     public FlightRoute() {
+        this.flights = new ArrayList<>();
     }
 
     public FlightRoute(boolean hasReturnFlight, boolean isDisabled) {
+        this();
         this.hasReturnFlight = hasReturnFlight;
         this.isDisabled = isDisabled;
     }

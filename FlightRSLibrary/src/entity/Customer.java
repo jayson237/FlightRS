@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,9 +53,12 @@ public class Customer implements Serializable {
     private List<FlightReservation> flightReservations;
 
     public Customer() {
+        this.transactions = new ArrayList<>();
+        this.flightReservations = new ArrayList<>();
     }
 
     public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String password) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -56,17 +57,16 @@ public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLo
             try {
                 em.persist(fare);
                 flightSchedulePlan.getFares().add(fare);
-                fare.setFlightSchedulePlan(flightSchedulePlan);
+                fare.getFlightSchedulePlans().add(flightSchedulePlan);
                 return fare;
             } catch (PersistenceException ex) {
                 if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
-                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+                    
+                       
                         throw new FareExistException("Overlap in fare basis codes");
-                    } else {
-                        throw new UnknownPersistenceException(ex.getMessage());
-                    }
+                    
                 } else {
-                    throw new UnknownPersistenceException(ex.getMessage());
+                    throw new FareExistException("Overlap in fare basis codes");
                 }
             }
         } else {
@@ -103,11 +103,15 @@ public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLo
     }
 
     @Override
-    public List<Fare> retrieveFareByPlanId(Long planId) throws FlightSchedulePlanNotFoundException {
+    public List<Fare> retrieveFareByPlanId(Long planId) throws FlightSchedulePlanNotFoundException, FareNotFoundException {
         FlightSchedulePlan plan = flightSchedulePlanSessionBean.retrieveFlightSchedulePlanById(planId);
-        Query q = em.createQuery("SELECT f FROM Fare f WHERE f.flightSchedulePlan = :plan");
+        Query q = em.createQuery("SELECT f FROM Fare f JOIN f.flightSchedulePlans p WHERE p = :plan");
         q.setParameter("plan", plan);
-        return q.getResultList();
+        try {
+            return q.getResultList();
+        } catch (NoResultException ex) {
+            throw new FareNotFoundException("Fare with Flight Schedule Plan id: " + planId + "does not exist");
+        }
     }
 
     private String prepareInputDataValidationErrorsMessage(Set<ConstraintViolation<Fare>> constraintViolations) {

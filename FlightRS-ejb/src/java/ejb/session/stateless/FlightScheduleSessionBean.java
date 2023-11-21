@@ -27,6 +27,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.enumeration.CabinClassType;
+import util.exception.AirportNotFoundException;
 import util.exception.CabinClassNotFoundException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleExistException;
@@ -41,13 +42,19 @@ import util.exception.UpdateFlightScheduleException;
  * @author jayso
  */
 @Stateless
-public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemote, FlightScheduleSessionBeanLocal {
+public class FlightScheduleSessionBean implements FlightScheduleSessionBeanLocal, FlightScheduleSessionBeanRemote {
+
+    @EJB
+    private SeatInventorySessionBeanLocal seatInventorySessionBean;
 
     @EJB
     private FlightSessionBeanLocal flightSessionBean;
 
     @EJB
-    private SeatInventorySessionBeanLocal seatsInventorySessionBean;
+    private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBean;
+
+    @EJB
+    private CabinClassSessionBeanLocal cabinClassSessionBean;
 
     @PersistenceContext(unitName = "FlightRS-ejbPU")
     private EntityManager em;
@@ -61,55 +68,14 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
     }
 
     @Override
-    public FlightSchedule createFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule) throws FlightScheduleExistException, GeneralException, InputDataValidationException {
-        Set<ConstraintViolation<FlightSchedule>> constraintViolations = validator.validate(flightSchedule);
-        if (constraintViolations.isEmpty()) {
-            try {
-                em.persist(flightSchedule);
-
-                flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
-                if (!flightSchedulePlan.getFlightSchedules().contains(flightSchedule)) {
-                    flightSchedulePlan.getFlightSchedules().add(flightSchedule);
-                }
-
-                return flightSchedule;
-
-            } catch (PersistenceException ex) {
-                if (ex.getCause() != null
-                        && ex.getCause().getCause() != null
-                        && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
-                    throw new FlightScheduleExistException("Flight schedule already exist");
-                } else {
-                    throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
-                }
-            }
-        } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-        }
-    }
-
-    @Override
     public void deleteSchedule(List<FlightSchedule> flightSchedule) {
 
         for (FlightSchedule sched : flightSchedule) {
-            seatsInventorySessionBean.deleteSeatInventory(sched.getSeatInventory());
+            seatInventorySessionBean.deleteSeatInventory(sched.getSeatInventory());
             em.remove(sched);
         }
     }
 
-    @Override
-    public FlightSchedule retrieveFlightScheduleById(Long flightScheduleID) throws FlightScheduleNotFoundException {
-        FlightSchedule schedule = em.find(FlightSchedule.class, flightScheduleID);
-
-        if (schedule != null) {
-            return schedule;
-        } else {
-            throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");
-        }
-
-    }
-
-    @Override
     public FlightSchedule updateFlightSchedule(long flightScheduleId, Date newDepartureDateTime, double newFlightDuration) throws FlightScheduleNotFoundException, UpdateFlightScheduleException {
         FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleId);
 
@@ -149,7 +115,6 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         return flightSchedule;
     }
 
-    @Override
     public void deleteFlightSchedule(long flightScheduleId) throws FlightScheduleNotFoundException, UpdateFlightScheduleException {
         FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleId);
         if (!flightSchedule.getFlightReservations().isEmpty()) {
@@ -162,76 +127,120 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             em.remove(flightSchedule);
         }
     }
-    
+
     @Override
-    public List<FlightSchedule> searchFlightAll(String origin, String destination, Date departureDate, CabinClassType cabin) throws FlightNotFoundException {
+    public FlightSchedule createFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule) throws FlightScheduleExistException, GeneralException, InputDataValidationException {
+        Set<ConstraintViolation<FlightSchedule>> constraintViolations = validator.validate(flightSchedule);
+        if (constraintViolations.isEmpty()) {
+            try {
+                em.persist(flightSchedule);
+
+                flightSchedule.setFlightSchedulePlan(flightSchedulePlan);
+
+                flightSchedulePlan.getFlightSchedules().add(flightSchedule);
+
+                return flightSchedule;
+
+            } catch (PersistenceException ex) {
+                if (ex.getCause() != null
+                        && ex.getCause().getCause() != null
+                        && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
+                    throw new FlightScheduleExistException("Flight schedule already exist");
+                } else {
+                    throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+                }
+            }
+        } else {
+            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+        }
+    }
+
+    @Override
+    public FlightSchedule retrieveFlightScheduleById(Long flightScheduleID) throws FlightScheduleNotFoundException {
+        FlightSchedule schedule = em.find(FlightSchedule.class, flightScheduleID);
+
+        if (schedule != null) {
+            return schedule;
+        } else {
+            throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");
+        }
+
+    }
+
+    @Override
+    public List<FlightSchedule> searchFlightAll(String origin, String destination, Date departureDate, CabinClassType cabin) throws FlightNotFoundException, AirportNotFoundException {
         List<FlightSchedule> schedules = new ArrayList<>();
         List<Flight> flights = flightSessionBean.retrieveAllFlightByRoute(origin, destination);
-
-        for (Flight flight: flights) {
-            for (FlightSchedulePlan flightSchedulePlan: flight.getFlightSchedulePlans()) {
+        for (Flight flight : flights) {
+            for (FlightSchedulePlan flightSchedulePlan : flight.getFlightSchedulePlans()) {
                 if (flightSchedulePlan.isDisabled()) {
                     continue;
-                } 
-                for (FlightSchedule flightSchedule: flightSchedulePlan.getFlightSchedules()) {
+                }
+                for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
                     boolean add = false;
                     if (cabin == null) {
                         add = true;
                     } else {
-                        for (SeatInventory seatInventory: flightSchedule.getSeatInventory()) {
-                            if (seatInventory.getCabin().getType().equals(cabin)) {
-                                add = true;
+
+                        for (SeatInventory seatInventory : flightSchedule.getSeatInventory()) {
+                            if (seatInventory != null) {
+                                if (seatInventory.getCabin().getType().equals(cabin)) {
+                                    add = true;
+                                }
                             }
                         }
+
                     }
-                    
+
                     Calendar c1 = Calendar.getInstance();
                     Calendar c2 = Calendar.getInstance();
                     c1.setTime(flightSchedule.getDepartureDateTime());
                     c2.setTime(departureDate);
-                    boolean isSameDay = c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) &&
-                                      c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);       
-                    if (!isSameDay){
+                    boolean isSameDay = c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+                            && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);
+                    if (!isSameDay) {
                         add = false;
                     }
                     if (add) {
                         schedules.add(flightSchedule);
                     }
                 }
-            } 
-        }       
+            }
+        }
+
         Collections.sort(schedules, new FlightSchedule.FlightScheduleComparator());
         return schedules;
     }
-    
-    public List<FlightSchedule> searchFlightAllUnmanaged(String origin, String destination, Date departureDate, CabinClassType cabin) throws FlightNotFoundException {
+
+    @Override
+    public List<FlightSchedule> searchFlightAllUnmanaged(String origin, String destination, Date departureDate, CabinClassType cabin) throws AirportNotFoundException, FlightNotFoundException {
         List<FlightSchedule> schedules = new ArrayList<>();
         List<Flight> flights = flightSessionBean.retrieveAllFlightByRoute(origin, destination);
 
-        for (Flight flight: flights) {
-            for (FlightSchedulePlan flightSchedulePlan: flight.getFlightSchedulePlans()) {
+        for (Flight flight : flights) {
+            for (FlightSchedulePlan flightSchedulePlan : flight.getFlightSchedulePlans()) {
                 if (flightSchedulePlan.isDisabled()) {
                     continue;
-                } 
-                for (FlightSchedule flightSchedule: flightSchedulePlan.getFlightSchedules()) {
+                }
+                for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
                     boolean add = false;
                     if (cabin == null) {
                         add = true;
                     } else {
-                        for (SeatInventory seatInventory: flightSchedule.getSeatInventory()) {
+                        for (SeatInventory seatInventory : flightSchedule.getSeatInventory()) {
                             if (seatInventory.getCabin().getType().equals(cabin)) {
                                 add = true;
                             }
                         }
                     }
-                    
+
                     Calendar c1 = Calendar.getInstance();
                     Calendar c2 = Calendar.getInstance();
                     c1.setTime(flightSchedule.getDepartureDateTime());
                     c2.setTime(departureDate);
-                    boolean isSameDay = c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR) &&
-                                      c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);       
-                    if (!isSameDay){
+                    boolean isSameDay = c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+                            && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);
+                    if (!isSameDay) {
                         add = false;
                     }
                     if (add) {
@@ -239,73 +248,72 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
                         schedules.add(flightSchedule);
                     }
                 }
-            } 
-        }       
+            }
+        }
         Collections.sort(schedules, new FlightSchedule.FlightScheduleComparator());
         return schedules;
     }
-    
-    
+
     @Override
     public List<Pair<FlightSchedule, FlightSchedule>> getConnectingFlightSchedules(String departure, String destination, Date date, CabinClassType cabin) throws FlightNotFoundException {
         List<Pair<FlightSchedule, FlightSchedule>> schedule = new ArrayList<>();
         List<Flight[]> flight = flightSessionBean.retrieveAllIndirectFlightByFlightRoute(departure, destination);
-        
-        for (Object[] pair: flight) {
+
+        for (Object[] pair : flight) {
             Flight firstFlight = (Flight) pair[0];
             Flight secondFlight = (Flight) pair[1];
-            for (FlightSchedulePlan flightSchedulePlan: firstFlight.getFlightSchedulePlans()) {
+            for (FlightSchedulePlan flightSchedulePlan : firstFlight.getFlightSchedulePlans()) {
                 if (flightSchedulePlan.isDisabled()) {
                     continue;
                 }
-                for (FlightSchedule flightSchedule: flightSchedulePlan.getFlightSchedules()) {
-                    for (FlightSchedulePlan flightSchedulePlan2: secondFlight.getFlightSchedulePlans()) {
+                for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
+                    for (FlightSchedulePlan flightSchedulePlan2 : secondFlight.getFlightSchedulePlans()) {
                         if (flightSchedulePlan2.isDisabled()) {
                             continue;
                         }
-                        for (FlightSchedule flightSchedule2: flightSchedulePlan2.getFlightSchedules()) {
+                        for (FlightSchedule flightSchedule2 : flightSchedulePlan2.getFlightSchedules()) {
                             boolean add = false;
                             if (cabin == null) {
                                 add = true;
                             } else {
-                                for (SeatInventory seatInventory: flightSchedule.getSeatInventory()) {
-                                    for (SeatInventory seatInventory2: flightSchedule2.getSeatInventory()) {
+                                for (SeatInventory seatInventory : flightSchedule.getSeatInventory()) {
+                                    for (SeatInventory seatInventory2 : flightSchedule2.getSeatInventory()) {
                                         if (seatInventory.getCabin().getType().equals(cabin) && seatInventory2.getCabin().getType().equals(cabin)) {
-                                        add = true;
+                                            add = true;
                                         }
-                                    }                           
+                                    }
                                 }
                             }
-                            
+
                             Calendar ca = Calendar.getInstance();
                             Calendar cc = Calendar.getInstance();
                             ca.setTime(flightSchedule.getDepartureDateTime());
                             cc.setTime(date);
-                            boolean sameDay = ca.get(Calendar.DAY_OF_YEAR) == cc.get(Calendar.DAY_OF_YEAR) &&
-                                              ca.get(Calendar.YEAR) == cc.get(Calendar.YEAR);       
-                            if (!sameDay){
+                            boolean sameDay = ca.get(Calendar.DAY_OF_YEAR) == cc.get(Calendar.DAY_OF_YEAR)
+                                    && ca.get(Calendar.YEAR) == cc.get(Calendar.YEAR);
+                            if (!sameDay) {
                                 add = false;
                             }
-                            
+
                             Calendar c = Calendar.getInstance();
                             c.setTime(flightSchedule.getDepartureDateTime());
-                            double duration = flightSchedule.getEstimatedDuration();                
+                            double duration = flightSchedule.getEstimatedDuration();
                             int hour = (int) duration;
                             int min = (int) (duration % 1 * 60);
                             c.add(Calendar.HOUR_OF_DAY, hour);
-                            c.add(Calendar.MINUTE, min);               
-                            
+                            c.add(Calendar.MINUTE, min);
+
                             Calendar c2 = Calendar.getInstance();
                             c2.setTime(flightSchedule2.getDepartureDateTime());
                             long gap = Duration.between(c.toInstant(), c2.toInstant()).toHours();
                             if (gap < 2l || gap > 12l) {
                                 add = false;
                             }
-                            
+
                             if (add) {
                                 schedule.add(new Pair(flightSchedule, flightSchedule2));
                             }
-                            
+
                         }
                     }
                 }
@@ -314,69 +322,111 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         Collections.sort(schedule, new FlightSchedule.ConnectingFlightScheduleComparator());
         return schedule;
     }
-    
+
+    @Override
+    public List<FlightSchedule> getFlightSchedulesUnmanaged(String departure, String destination, Date date, CabinClassType cabin) throws FlightNotFoundException, AirportNotFoundException {
+        List<FlightSchedule> schedule = new ArrayList<>();
+        List<Flight> flight = flightSessionBean.retrieveAllFlightByRoute(departure, destination);
+
+        for (Flight flightEntity : flight) {
+            for (FlightSchedulePlan flightSchedulePlanEntity : flightEntity.getFlightSchedulePlans()) {
+                if (flightSchedulePlanEntity.isDisabled()) {
+                    continue;
+                }
+                for (FlightSchedule flightScheduleEntity : flightSchedulePlanEntity.getFlightSchedules()) {
+                    boolean toAdd = false;
+                    if (cabin == null) {
+                        toAdd = true;
+                    } else {
+                        for (SeatInventory seatInventoryEntity : flightScheduleEntity.getSeatInventory()) {
+                            if (seatInventoryEntity.getCabin().getType().equals(cabin)) {
+                                toAdd = true;
+                            }
+                        }
+                    }
+
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(flightScheduleEntity.getDepartureDateTime());
+                    c2.setTime(date);
+                    boolean sameDay = c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)
+                            && c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR);
+                    if (!sameDay) {
+                        toAdd = false;
+                    }
+                    if (toAdd) {
+                        em.detach(flightScheduleEntity);
+                        schedule.add(flightScheduleEntity);
+                    }
+                }
+            }
+        }
+        Collections.sort(schedule, new FlightSchedule.FlightScheduleComparator());
+        return schedule;
+    }
+
     @Override
     public List<Pair<FlightSchedule, FlightSchedule>> getConnectingFlightSchedulesUnmanaged(String departure, String destination, Date date, CabinClassType cabin) throws FlightNotFoundException {
         List<Pair<FlightSchedule, FlightSchedule>> schedule = new ArrayList<>();
         List<Flight[]> flight = flightSessionBean.retrieveAllIndirectFlightByFlightRoute(departure, destination);
-        
-        for (Object[] pair: flight) {
+
+        for (Object[] pair : flight) {
             Flight firstFlight = (Flight) pair[0];
             Flight secondFlight = (Flight) pair[1];
-            for (FlightSchedulePlan flightSchedulePlan: firstFlight.getFlightSchedulePlans()) {
+            for (FlightSchedulePlan flightSchedulePlan : firstFlight.getFlightSchedulePlans()) {
                 if (flightSchedulePlan.isDisabled()) {
                     continue;
                 }
-                for (FlightSchedule flightSchedule: flightSchedulePlan.getFlightSchedules()) {
-                    for (FlightSchedulePlan flightSchedulePlan2: secondFlight.getFlightSchedulePlans()) {
+                for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
+                    for (FlightSchedulePlan flightSchedulePlan2 : secondFlight.getFlightSchedulePlans()) {
                         if (flightSchedulePlan2.isDisabled()) {
                             continue;
                         }
-                        for (FlightSchedule flightSchedule2: flightSchedulePlan2.getFlightSchedules()) {
+                        for (FlightSchedule flightSchedule2 : flightSchedulePlan2.getFlightSchedules()) {
                             boolean add = false;
                             if (cabin == null) {
                                 add = true;
                             } else {
-                                for (SeatInventory seatInventory: flightSchedule.getSeatInventory()) {
-                                    for (SeatInventory seatInventory2: flightSchedule2.getSeatInventory()) {
+                                for (SeatInventory seatInventory : flightSchedule.getSeatInventory()) {
+                                    for (SeatInventory seatInventory2 : flightSchedule2.getSeatInventory()) {
                                         if (seatInventory.getCabin().getType().equals(cabin) && seatInventory2.getCabin().getType().equals(cabin)) {
-                                        add = true;
+                                            add = true;
                                         }
-                                    }                           
+                                    }
                                 }
                             }
-                            
+
                             Calendar ca = Calendar.getInstance();
                             Calendar cc = Calendar.getInstance();
                             ca.setTime(flightSchedule.getDepartureDateTime());
                             cc.setTime(date);
-                            boolean sameDay = ca.get(Calendar.DAY_OF_YEAR) == cc.get(Calendar.DAY_OF_YEAR) &&
-                                              ca.get(Calendar.YEAR) == cc.get(Calendar.YEAR);       
-                            if (!sameDay){
+                            boolean sameDay = ca.get(Calendar.DAY_OF_YEAR) == cc.get(Calendar.DAY_OF_YEAR)
+                                    && ca.get(Calendar.YEAR) == cc.get(Calendar.YEAR);
+                            if (!sameDay) {
                                 add = false;
                             }
-                            
+
                             Calendar c = Calendar.getInstance();
                             c.setTime(flightSchedule.getDepartureDateTime());
-                            double duration = flightSchedule.getEstimatedDuration();          
+                            double duration = flightSchedule.getEstimatedDuration();
                             int hour = (int) duration;
                             int min = (int) (duration % 1 * 60);
                             c.add(Calendar.HOUR_OF_DAY, hour);
-                            c.add(Calendar.MINUTE, min);               
-                            
+                            c.add(Calendar.MINUTE, min);
+
                             Calendar c2 = Calendar.getInstance();
                             c2.setTime(flightSchedule2.getDepartureDateTime());
                             long gap = Duration.between(c.toInstant(), c2.toInstant()).toHours();
                             if (gap < 2l || gap > 12l) {
                                 add = false;
                             }
-                            
+
                             if (add) {
                                 em.detach(flightSchedule);
                                 em.detach(flightSchedule2);
                                 schedule.add(new Pair(flightSchedule, flightSchedule2));
                             }
-                            
+
                         }
                     }
                 }
@@ -385,46 +435,81 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         Collections.sort(schedule, new FlightSchedule.ConnectingFlightScheduleComparator());
         return schedule;
     }
-    
-    
-    
+
     @Override
     public Fare getSmallestFare(FlightSchedule flightSchedule, CabinClassType cabinClassType) throws FlightScheduleNotFoundException, CabinClassNotFoundException {
         FlightSchedule resultFlightSchedule = retrieveFlightScheduleById(flightSchedule.getFlightScheduleId());
         List<Fare> fares = resultFlightSchedule.getFlightSchedulePlan().getFares();
         List<Fare> ccfares = new ArrayList<>();
-        for (Fare fare: fares) {
+        for (Fare fare : fares) {
             if (fare.getCabinClassType().equals(cabinClassType)) {
                 ccfares.add(fare);
             }
         }
         if (ccfares.isEmpty()) {
-            throw new CabinClassNotFoundException("Cabin class " + cabinClassType + " not found");
+            throw new CabinClassNotFoundException("Cabin class not found");
         }
         Fare smallest = ccfares.get(0);
         for (Fare fare : ccfares) {
-            if(fare.getAmount().compareTo(smallest.getAmount()) < 0) {
+            if (fare.getAmount().compareTo(smallest.getAmount()) < 0) {
                 smallest = fare;
             }
         }
         return smallest;
     }
-    
+
+    @Override
+    public FlightSchedule retrieveFlightScheduleByIdUnmanaged(Long flightScheduleID) throws FlightScheduleNotFoundException {
+        FlightSchedule schedule = em.find(FlightSchedule.class, flightScheduleID);
+
+        if (schedule != null) {
+            em.detach(schedule);
+            return schedule;
+        } else {
+            throw new FlightScheduleNotFoundException("Flight Schedule " + flightScheduleID + " not found!");
+        }
+
+    }
+
+    @Override
+    public Fare getBiggestFareUnmanaged(FlightSchedule flightScheduleEntity, CabinClassType type) throws FlightScheduleNotFoundException, CabinClassNotFoundException {
+        FlightSchedule flightSchedule = retrieveFlightScheduleById(flightScheduleEntity.getFlightScheduleId());
+        List<Fare> fares = flightSchedule.getFlightSchedulePlan().getFares();
+        List<Fare> ccfares = new ArrayList<>();
+        for (Fare fare : fares) {
+            if (fare.getCabinClassType().equals(type)) {
+                ccfares.add(fare);
+            }
+        }
+        if (ccfares.isEmpty()) {
+            throw new CabinClassNotFoundException("Cabin Class not found");
+        }
+
+        Fare biggest = ccfares.get(0);
+        for (Fare fare : ccfares) {
+            if (fare.getAmount().compareTo(biggest.getAmount()) > 0) {
+                biggest = fare;
+            }
+        }
+        em.detach(biggest);
+        return biggest;
+    }
+
     @Override
     public SeatInventory getSeatInventory(FlightSchedule flightSchedule, CabinClassType cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException {
         FlightSchedule flightScheduleResult = retrieveFlightScheduleById(flightSchedule.getFlightScheduleId());
-        for (SeatInventory seat: flightScheduleResult.getSeatInventory()) {
+        for (SeatInventory seat : flightScheduleResult.getSeatInventory()) {
             if (seat.getCabin().getType() == cabinClassType) {
                 return seat;
             }
         }
         throw new SeatInventoryNotFoundException("Seat Inventory Not Found");
     }
-    
+
     @Override
     public SeatInventory getSeatInventoryUnmanaged(FlightSchedule flightSchedule, CabinClassType cabinClassType) throws FlightScheduleNotFoundException, SeatInventoryNotFoundException {
         FlightSchedule flightScheduleResult = retrieveFlightScheduleById(flightSchedule.getFlightScheduleId());
-        for (SeatInventory seat: flightScheduleResult.getSeatInventory()) {
+        for (SeatInventory seat : flightScheduleResult.getSeatInventory()) {
             if (seat.getCabin().getType() == cabinClassType) {
                 em.detach(seat);
                 return seat;
@@ -442,4 +527,5 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
 
         return msg;
     }
+
 }

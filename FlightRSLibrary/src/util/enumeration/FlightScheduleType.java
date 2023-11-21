@@ -6,7 +6,7 @@ package util.enumeration;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 public enum FlightScheduleType {
     MANUALSINGLE, MANUALMULTIPLE, RECURRENTNDAY, RECURRENTWEEKLY;

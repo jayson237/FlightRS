@@ -6,7 +6,7 @@ package util.enumeration;
 
 /**
  *
- * @author timothy
+ * @author jayso
  */
 public enum CabinClassType {
     F, J, W, Y

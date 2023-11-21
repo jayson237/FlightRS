@@ -28,6 +28,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FareExistException;
+import util.exception.FareNotFoundException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleExistException;
 import util.exception.FlightSchedulePlanExistException;
@@ -83,7 +84,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     Date presentDate = pair.getKey();
                     Date endDate = plan.getRecurrentEndDate();
 
-                    while (endDate.compareTo(presentDate) > 0) {
+                    while (removeTimeComponent(endDate).compareTo(removeTimeComponent(presentDate)) >= 0) {
                         Calendar c = Calendar.getInstance();
                         c.setTime(presentDate);
 
@@ -125,9 +126,19 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
     }
+    
+    private Date removeTimeComponent(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
 
     @Override
-    public FlightSchedulePlan createNewReturnFlightSchedulePlan(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FlightNotFoundException, FlightSchedulePlanNotFoundException, InputDataValidationException, FareExistException, FlightScheduleExistException, UnknownPersistenceException, FlightSchedulePlanExistException, GeneralException {
+    public FlightSchedulePlan createNewReturnFlightSchedulePlan(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FareNotFoundException, FlightNotFoundException, FlightSchedulePlanNotFoundException, InputDataValidationException, FareExistException, FlightScheduleExistException, UnknownPersistenceException, FlightSchedulePlanExistException, GeneralException {
         Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(returnPlan);
         if (constraintViolations.isEmpty()) {
             try {
@@ -237,7 +248,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     @Override
-    public FlightSchedulePlan createNewReturnFlightSchedulePlanMultiple(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, List<Pair<Date, Double>> info) throws FlightSchedulePlanExistException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException {
+    public FlightSchedulePlan createNewReturnFlightSchedulePlanMultiple(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, List<Pair<Date, Double>> info) throws FareNotFoundException, FlightSchedulePlanExistException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException {
         Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(returnPlan);
         if (constraintViolations.isEmpty()) {
             try {
@@ -299,38 +310,24 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 Date endDate = plan.getRecurrentEndDate();
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(presentDate);
-                FlightSchedule schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
-                FlightSchedule fs = flightScheduleSessionBean.createFlightSchedule(plan, schedule);
-                for (CabinClass cc : plan.getFlight().getAircraftConfiguration().getCabinClasses()) {
-                    SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
-                    seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
-                }
+                FlightSchedule schedule;
+                FlightSchedule fs;
 
-                boolean condition = false;
                 while (cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
                     cal.add(Calendar.DATE, 1);
-                    condition = true;
                 }
 
-                if (condition) {
+                cal.add(Calendar.DAY_OF_MONTH, -1);
+
+                while (endDate.compareTo(cal.getTime()) >= 0) {
+                    cal.add(Calendar.DAY_OF_MONTH, 1);
                     schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
                     fs = flightScheduleSessionBean.createFlightSchedule(plan, schedule);
                     for (CabinClass cc : plan.getFlight().getAircraftConfiguration().getCabinClasses()) {
                         SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
                         seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
                     }
-                }
-
-                cal.add(Calendar.DAY_OF_MONTH, 7);
-
-                while (endDate.compareTo(cal.getTime()) > 0) {
-                    schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
-                    fs = flightScheduleSessionBean.createFlightSchedule(plan, schedule);
-                    for (CabinClass cc : plan.getFlight().getAircraftConfiguration().getCabinClasses()) {
-                        SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
-                        seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
-                    }
-                    cal.add(Calendar.DAY_OF_MONTH, 7);
+                    cal.add(Calendar.DAY_OF_MONTH, 6);
                 }
 
                 associateFlightToPlan(flightId, plan);
@@ -363,80 +360,79 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
 
-    @Override
-    public FlightSchedulePlan createNewReturnFlightSchedulePlanWeekly(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FlightSchedulePlanNotFoundException, FlightNotFoundException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException {
-        Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(returnPlan);
-        if (constraintViolations.isEmpty()) {
-            try {
-                em.persist(returnPlan);
-                Date presentDate = pair.getKey();
-                Date endDate = returnPlan.getRecurrentEndDate();
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(presentDate);
-                List<CabinClass> cabinClasses = plan.getFlight().getAircraftConfiguration().getCabinClasses();
-                FlightSchedule schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
-                FlightSchedule fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
-                for (CabinClass cc : cabinClasses) {
-                    SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
-                    seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
-                }
-
-                boolean condition = false;
-                while (cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
-                    cal.add(Calendar.DATE, 1);
-                    condition = true;
-                }
-
-                if (condition) {
-                    schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
-                    fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
-                    for (CabinClass cc : cabinClasses) {
-                        SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
-                        seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
-                    }
-                }
-
-                cal.add(Calendar.DAY_OF_MONTH, 7);
-
-                while (endDate.compareTo(cal.getTime()) > 0) {
-                    schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
-                    fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
-                    for (CabinClass cc : cabinClasses) {
-                        SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
-                        seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
-                    }
-                    cal.add(Calendar.DAY_OF_MONTH, 7);
-                }
-
-                associateFlightToPlan(flightId, returnPlan);
-
-                List<Fare> returnFares = fareSessionBean.retrieveFareByPlanId(plan.getFlightSchedulePlanId());
-                for (Fare fare : returnFares) {
-                    returnPlan.getFares().add(fare);
-                }
-
-                em.flush();
-                return returnPlan;
-            } catch (FlightNotFoundException ex) {
-                throw new FlightNotFoundException("Flight does not exist");
-            } catch (FlightSchedulePlanExistException ex) {
-                throw new FlightSchedulePlanExistException("Such flight schedule plan already exist");
-            } catch (PersistenceException ex) {
-                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
-                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
-                        throw new FlightSchedulePlanExistException();
-                    } else {
-                        throw new UnknownPersistenceException(ex.getMessage());
-                    }
-                } else {
-                    throw new UnknownPersistenceException(ex.getMessage());
-                }
-            }
-        } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
-        }
-    }
-
+//    @Override
+//    public FlightSchedulePlan createNewReturnFlightSchedulePlanWeekly(FlightSchedulePlan returnPlan, FlightSchedulePlan plan, Long flightId, Pair<Date, Double> pair, int recurrent) throws FareNotFoundException, FlightSchedulePlanNotFoundException, FlightNotFoundException, FlightScheduleExistException, InputDataValidationException, FareExistException, UnknownPersistenceException, FlightNotFoundException, FlightSchedulePlanExistException, GeneralException {
+//        Set<ConstraintViolation<FlightSchedulePlan>> constraintViolations = validator.validate(returnPlan);
+//        if (constraintViolations.isEmpty()) {
+//            try {
+//                em.persist(returnPlan);
+//                Date presentDate = pair.getKey();
+//                Date endDate = returnPlan.getRecurrentEndDate();
+//                Calendar cal = Calendar.getInstance();
+//                cal.setTime(presentDate);
+//                List<CabinClass> cabinClasses = plan.getFlight().getAircraftConfiguration().getCabinClasses();
+//                FlightSchedule schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
+//                FlightSchedule fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
+//                for (CabinClass cc : cabinClasses) {
+//                    SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
+//                    seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
+//                }
+//
+//                boolean condition = false;
+//                while (cal.get(Calendar.DAY_OF_WEEK) != recurrent) {
+//                    cal.add(Calendar.DATE, 1);
+//                    condition = true;
+//                }
+//
+//                if (condition) {
+//                    schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
+//                    fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
+//                    for (CabinClass cc : cabinClasses) {
+//                        SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
+//                        seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
+//                    }
+//                }
+//
+//                cal.add(Calendar.DAY_OF_MONTH, 7);
+//
+//                while (endDate.compareTo(cal.getTime()) > 0) {
+//                    schedule = new FlightSchedule(cal.getTime(), pair.getValue(), calculateEndDate(cal.getTime(), pair.getValue()));
+//                    fs = flightScheduleSessionBean.createFlightSchedule(returnPlan, schedule);
+//                    for (CabinClass cc : cabinClasses) {
+//                        SeatInventory seats = new SeatInventory(cc.getMaxCapacity(), 0, cc.getMaxCapacity());
+//                        seatsInventorySessionBean.createSeatInventory(seats, fs, cc);
+//                    }
+//                    cal.add(Calendar.DAY_OF_MONTH, 7);
+//                }
+//
+//                associateFlightToPlan(flightId, returnPlan);
+//
+//                List<Fare> returnFares = fareSessionBean.retrieveFareByPlanId(plan.getFlightSchedulePlanId());
+//                for (Fare fare : returnFares) {
+//                    returnPlan.getFares().add(fare);
+//                }
+//
+//                em.flush();
+//                return returnPlan;
+//            } catch (FlightNotFoundException ex) {
+//                throw new FlightNotFoundException("Flight does not exist");
+//            } catch (FlightSchedulePlanExistException ex) {
+//                throw new FlightSchedulePlanExistException("Such flight schedule plan already exist");
+//            } catch (PersistenceException ex) {
+//                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
+//                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
+//                        throw new FlightSchedulePlanExistException();
+//                    } else {
+//                        throw new UnknownPersistenceException(ex.getMessage());
+//                    }
+//                } else {
+//                    throw new UnknownPersistenceException(ex.getMessage());
+//                }
+//            }
+//        } else {
+//            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+//        }
+//    }
     @Override
     public List<FlightSchedulePlan> retrieveAllFlightSchedulePlan() {
         Query q = em.createQuery("SELECT DISTINCT p FROM FlightSchedulePlan p JOIN p.flightSchedules fs WHERE p.isDisabled = false ORDER BY p.flightNumber ASC, fs.departureDateTime DESC");
@@ -486,12 +482,23 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 
     @Override
     public FlightSchedulePlan retrieveFlightSchedulePlanById(Long planId) throws FlightSchedulePlanNotFoundException {
-        FlightSchedulePlan plan = em.find(FlightSchedulePlan.class,
-                planId);
+        FlightSchedulePlan plan = em.find(FlightSchedulePlan.class, planId);
         if (plan != null) {
             return plan;
         }
         throw new FlightSchedulePlanNotFoundException("Flight Schedule Plan with id: " + planId + " does not exist");
+    }
+
+    @Override
+    public List<FlightSchedulePlan> retrieveFlightSchedulePlanByFlightNumber(String number) throws FlightNotFoundException, FlightSchedulePlanNotFoundException {
+        Flight flight = flightSessionBean.retrieveFlightByNumber(number);
+        if (flight != null) {
+            Query q = em.createQuery("SELECT DISTINCT fsp FROM FlightSchedulePlan fsp WHERE fsp.flight = :flight");
+            q.setParameter("flight", flight);
+            return q.getResultList();
+        } else {
+            throw new FlightSchedulePlanNotFoundException("There is no existing Flight Schedule Plan record related to " + number);
+        }
     }
 
     @Override

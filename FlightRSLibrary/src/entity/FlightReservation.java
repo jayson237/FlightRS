@@ -6,6 +6,7 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,9 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import util.enumeration.CabinClassType;
 
 /**
@@ -30,6 +29,7 @@ import util.enumeration.CabinClassType;
  */
 @Entity
 public class FlightReservation implements Serializable {
+    
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -41,14 +41,10 @@ public class FlightReservation implements Serializable {
     @NotNull
     private CabinClassType cabinClassType;
 
-    @Column(nullable = false, length = 7)
-    @Size(min = 3, max = 7)
-    @NotNull
+    @Column(length = 7)
     private String fareBasisCode;
 
     @Column(nullable = false, scale = 2, precision = 11)
-    @DecimalMin("0.00")
-    @NotNull
     private BigDecimal totalAmount;
 
     @ManyToOne(optional = false, cascade = CascadeType.DETACH)
@@ -67,10 +63,11 @@ public class FlightReservation implements Serializable {
     private List<Passenger> passengers;
 
     public FlightReservation() {
+        this.passengers = new ArrayList<>();
     }
 
-    public FlightReservation(String fareBasisCode, BigDecimal totalAmount, CabinClassType cabinClassType) {
-        this.fareBasisCode = fareBasisCode;
+    public FlightReservation(BigDecimal totalAmount, CabinClassType cabinClassType) {
+        this();
         this.totalAmount = totalAmount;
         this.cabinClassType = cabinClassType;
     }

@@ -4,9 +4,11 @@
  */
 package ejb.session.stateful;
 
+import ejb.session.stateless.CustomerSessionBeanLocal;
 import ejb.session.stateless.FlightScheduleSessionBeanLocal;
 import ejb.session.stateless.SeatInventorySessionBeanLocal;
 import ejb.session.stateless.TransactionSessionBeanLocal;
+import entity.Customer;
 import entity.FlightReservation;
 import entity.FlightSchedule;
 import entity.Passenger;
@@ -18,11 +20,11 @@ import javax.ejb.EJB;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import util.exception.CustomerNotFoundException;
 import util.exception.FlightReservationExistException;
 import util.exception.FlightReservationNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
@@ -38,6 +40,9 @@ import util.exception.UnknownPersistenceException;
  */
 @Stateful
 public class FlightReservationSessionBean implements FlightReservationSessionBeanRemote, FlightReservationSessionBeanLocal {
+
+    @EJB
+    private CustomerSessionBeanLocal customerSessionBean;
 
     @EJB
     private TransactionSessionBeanLocal transactionSessionBean;
@@ -60,56 +65,43 @@ public class FlightReservationSessionBean implements FlightReservationSessionBea
     }
 
     @Override
-    public long createNewReservation(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long transactionId) throws TransactionNotFoundException, FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatBookedException, InputDataValidationException {
-        Set<ConstraintViolation<FlightReservation>> constraintViolations = validator.validate(reservation);
+    public long createNewReservation(FlightReservation reservation, List<Passenger> passengers, long flightScheduleId, long transactionId, long customerId) throws CustomerNotFoundException, TransactionNotFoundException, FlightReservationExistException, UnknownPersistenceException, FlightScheduleNotFoundException, SeatInventoryNotFoundException, SeatBookedException, InputDataValidationException {
 
-        if (constraintViolations.isEmpty()) {
-            try {
-                FlightSchedule flightSchedule = flightScheduleSessionBean.retrieveFlightScheduleById(flightScheduleId);
+        Customer customer = customerSessionBean.retrieveCustomerById(customerId);
+        FlightSchedule flightSchedule = flightScheduleSessionBean.retrieveFlightScheduleById(flightScheduleId);
 
-                Transaction transaction = transactionSessionBean.retrieveTransactionById(transactionId);
+        Transaction transaction = transactionSessionBean.retrieveTransactionById(transactionId);
 
-                SeatInventory seat = null;
-                for (SeatInventory seats : flightSchedule.getSeatInventory()) {
-                    if (seats.getCabin().getType() == reservation.getCabinClassType()) {
-                        seat = seats;
-                    }
-                }
-                if (seat == null) {
-                    throw new SeatInventoryNotFoundException("Seat Inventory for specified cabin class not found");
-                }
-
-                em.persist(reservation);
-
-                for (Passenger passenger : passengers) {
-                    em.persist(passenger);
-                    reservation.getPassengers().add(passenger);
-                    seatInventorySessionBean.bookSeat(seat.getSeatInventoryId(), passenger.getSeatNumber());
-                }
-
-                flightSchedule.getFlightReservations().add(reservation);
-                reservation.setFlightSchedule(flightSchedule);
-
-                reservation.setTransaction(transaction);
-                transaction.getFlightReservations().add(reservation);
-
-                em.flush();
-
-                return reservation.getFlightReservationId();
-            } catch (PersistenceException ex) {
-                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
-                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
-                        throw new FlightReservationExistException(" Flight Reservation already exist");
-                    } else {
-                        throw new UnknownPersistenceException(ex.getMessage());
-                    }
-                } else {
-                    throw new UnknownPersistenceException(ex.getMessage());
-                }
+        SeatInventory seat = null;
+        for (SeatInventory seats : flightSchedule.getSeatInventory()) {
+            if (seats.getCabin().getType() == reservation.getCabinClassType()) {
+                seat = seats;
             }
-        } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
         }
+        if (seat == null) {
+            throw new SeatInventoryNotFoundException("Seat Inventory for specified cabin class not found");
+        }
+
+        em.persist(reservation);
+
+        for (Passenger passenger : passengers) {
+            em.persist(passenger);
+            reservation.getPassengers().add(passenger);
+            seatInventorySessionBean.bookSeat(seat.getSeatInventoryId(), passenger.getSeatNumber());
+        }
+
+        flightSchedule.getFlightReservations().add(reservation);
+        reservation.setFlightSchedule(flightSchedule);
+
+        customer.getFlightReservations().add(reservation);
+        reservation.setCustomer(customer);
+
+        reservation.setTransaction(transaction);
+        transaction.getFlightReservations().add(reservation);
+
+        em.flush();
+
+        return reservation.getFlightReservationId();
 
     }
 

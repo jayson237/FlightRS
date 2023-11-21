@@ -12,7 +12,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -26,7 +25,7 @@ import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author jayso
+ * @author timothy
  */
 @Stateless
 public class TransactionSessionBean implements TransactionSessionBeanRemote, TransactionSessionBeanLocal {
@@ -47,32 +46,39 @@ public class TransactionSessionBean implements TransactionSessionBeanRemote, Tra
 
     @Override
     public Transaction createNewTransaction(Transaction transaction, long customerId) throws UnknownPersistenceException, InputDataValidationException, CustomerNotFoundException, TransactionExistException {
-        Set<ConstraintViolation<Transaction>> constraintViolations = validator.validate(transaction);
+
         Customer customer = customerSessionBean.retrieveCustomerById(customerId);
 
-        if (constraintViolations.isEmpty()) {
-            try {
-                em.persist(transaction);
+        em.persist(transaction);
 
-                transaction.setCustomer(customer);
-                customer.getTransactions().add(transaction);
+        transaction.setCustomer(customer);
+        customer.getTransactions().add(transaction);
 
-                em.flush();
-                return transaction;
-            } catch (PersistenceException ex) {
-                if (ex.getCause() != null && ex.getCause().getClass().getName().equals("org.eclipse.persistence.exceptions.DatabaseException")) {
-                    if (ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getName().equals("java.sql.SQLIntegrityConstraintViolationException")) {
-                        throw new TransactionExistException("Transaction already exists");
-                    } else {
-                        throw new UnknownPersistenceException(ex.getMessage());
-                    }
-                } else {
-                    throw new UnknownPersistenceException(ex.getMessage());
-                }
-            }
+        em.flush();
+        return transaction;
+
+    }
+
+    @Override
+    public Transaction retrieveTransactionByIdUnmanaged(long transactionId) throws TransactionNotFoundException {
+        Transaction transaction = em.find(Transaction.class, transactionId);
+        if (transaction == null) {
+            throw new TransactionNotFoundException("Transaction not found");
         } else {
-            throw new InputDataValidationException(prepareInputDataValidationErrorsMessage(constraintViolations));
+            return transaction;
         }
+    }
+
+    @Override
+    public List<Transaction> retrieveTransactionByCustomerIdUnmanaged(Long customerID) {
+        Query query = em.createQuery("SELECT r FROM Transaction r WHERE r.customer.customerId = :id");
+        query.setParameter("id", customerID);
+
+        List<Transaction> list = query.getResultList();
+        for (Transaction it : list) {
+            em.detach(it);
+        }
+        return list;
     }
 
     @Override
@@ -101,4 +107,5 @@ public class TransactionSessionBean implements TransactionSessionBeanRemote, Tra
 
         return msg;
     }
+
 }

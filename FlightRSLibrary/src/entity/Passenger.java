@@ -26,10 +26,10 @@ public class Passenger implements Serializable {
     @Column(length = 32, nullable = false)
     private String firstName;
 
-    @Column(length = 32, nullable = false)
+    @Column(length = 32)
     private String lastName;
 
-    @Column(length = 32, nullable = false, unique = true)
+    @Column(length = 32, nullable = false)
     private String passportNumber;
 
     @Column(length = 32, nullable = false)

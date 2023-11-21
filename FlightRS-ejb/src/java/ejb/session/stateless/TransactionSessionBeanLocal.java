@@ -7,15 +7,25 @@ package ejb.session.stateless;
 import entity.Transaction;
 import java.util.List;
 import javax.ejb.Local;
+import util.exception.CustomerNotFoundException;
+import util.exception.InputDataValidationException;
+import util.exception.TransactionExistException;
 import util.exception.TransactionNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author jayso
+ * @author timothy
  */
 @Local
 public interface TransactionSessionBeanLocal {
 
+    public Transaction createNewTransaction(Transaction transaction, long customerId) throws UnknownPersistenceException, InputDataValidationException, CustomerNotFoundException, TransactionExistException;
+
     public Transaction retrieveTransactionById(long transactionId) throws TransactionNotFoundException;
+
+    public List<Transaction> retrieveTransactionByCustomerIdUnmanaged(Long customerID);
+
+    public Transaction retrieveTransactionByIdUnmanaged(long transactionId) throws TransactionNotFoundException;
 
 }
