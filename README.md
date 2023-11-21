@@ -1,5 +1,5 @@
 # Merlion Flight RS
-Flight Reservation System made with Jakarta EE as part of IS2103 Final Project
+Flight Reservation System made with Jakarta EE and JPQL as part of IS2103 Final Project
 
 ## The Narrative
 Merlion Airlines is a new regional low cost carrier (LCC) serving the Asia Pacific region
