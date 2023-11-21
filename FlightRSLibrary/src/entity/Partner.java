@@ -7,12 +7,9 @@ package entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import util.enumeration.PartnerRole;
 
 /**
  *
@@ -25,27 +22,23 @@ public class Partner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long partnerId;
-    
+
     @Column(length = 32, nullable = false)
     private String name;
-    
+
     @Column(length = 32, nullable = false, unique = true)
-    private String username;
-    
+    private String email;
+
     @Column(length = 32, nullable = false)
     private String password;
-    
-    @Enumerated(EnumType.STRING)
-    private PartnerRole role;
 
     public Partner() {
     }
 
-    public Partner(String name, String username, String password, PartnerRole role) {
+    public Partner(String name, String email, String password) {
         this.name = name;
-        this.username = username;
+        this.email = email;
         this.password = password;
-        this.role = role;
     }
 
     public Long getPartnerId() {
@@ -64,12 +57,12 @@ public class Partner implements Serializable {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -78,14 +71,6 @@ public class Partner implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public PartnerRole getRole() {
-        return role;
-    }
-
-    public void setRole(PartnerRole role) {
-        this.role = role;
     }
 
     @Override

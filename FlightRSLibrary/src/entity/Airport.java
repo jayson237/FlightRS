@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -22,25 +24,39 @@ public class Airport implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(length = 64, nullable = false, unique = true)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String airportName;
-    
-    @Column(length = 64, nullable = false, unique = true)
+
+    @Column(length = 3, nullable = false, unique = true)
+    @Size(min = 3, max = 3)
+    @NotNull
     private String airportCode;
-    
+
     @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
+    private String city;
+
+    @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String stateProvince;
-    
+
     @Column(length = 64, nullable = false)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String country;
 
     public Airport() {
     }
 
-    public Airport(String airportName, String airportCode, String stateProvince, String country) {
+    public Airport(String airportName, String airportCode, String city, String stateProvince, String country) {
         this.airportName = airportName;
         this.airportCode = airportCode;
+        this.city = city;
         this.stateProvince = stateProvince;
         this.country = country;
     }
@@ -67,6 +83,14 @@ public class Airport implements Serializable {
 
     public void setAirportCode(String airportCode) {
         this.airportCode = airportCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getStateProvince() {

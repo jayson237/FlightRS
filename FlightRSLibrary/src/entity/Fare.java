@@ -6,6 +6,9 @@ package entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,8 +16,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToMany;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassType;
 
 /**
@@ -28,26 +33,40 @@ public class Fare implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
-    
-    @Column(nullable = false, length = 32, unique = true)
-    private String code;
-    
-    @Column(precision = 11, scale = 2)
+
+    @Column(length = 7)
+    @Size(min = 3, max = 7)
+    private String fareCode;
+
+    @Column(precision = 11, scale = 2, nullable = false)
+    @DecimalMin("0.00")
+    @NotNull
     private BigDecimal amount;
-    
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private CabinClassType cabinClassType;
-    
-    @OneToOne 
-    @JoinColumn(name = "flight_reservation_id")
-    private FlightReservation flightReservation;
+
+    @ManyToMany(mappedBy = "fares", cascade = CascadeType.DETACH)
+    private List<FlightSchedulePlan> flightSchedulePlans;
 
     public Fare() {
+        this.flightSchedulePlans = new ArrayList<>();
     }
 
-    public Fare(String code, BigDecimal amount) {
-        this.code = code;
+    public Fare(String fareCode, BigDecimal amount, CabinClassType cabinClassType) {
+        this();
+        this.fareCode = fareCode;
         this.amount = amount;
+        this.cabinClassType = cabinClassType;
+    }
+
+    public Fare(BigDecimal amount, CabinClassType cabinClassType) {
+        this();
+        this.fareCode = null;
+        this.amount = amount;
+        this.cabinClassType = cabinClassType;
     }
 
     public Long getFareId() {
@@ -56,6 +75,38 @@ public class Fare implements Serializable {
 
     public void setFareId(Long fareId) {
         this.fareId = fareId;
+    }
+
+    public String getFareCode() {
+        return fareCode;
+    }
+
+    public void setFareCode(String fareCode) {
+        this.fareCode = fareCode;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public CabinClassType getCabinClassType() {
+        return cabinClassType;
+    }
+
+    public void setCabinClassType(CabinClassType cabinClassType) {
+        this.cabinClassType = cabinClassType;
+    }
+
+    public List<FlightSchedulePlan> getFlightSchedulePlans() {
+        return flightSchedulePlans;
+    }
+
+    public void setFlightSchedulePlans(List<FlightSchedulePlan> flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
     }
 
     @Override
@@ -81,38 +132,6 @@ public class Fare implements Serializable {
     @Override
     public String toString() {
         return "entity.Fare[ id=" + fareId + " ]";
-    }
-
-    public FlightReservation getFlightReservation() {
-        return flightReservation;
-    }
-
-    public void setFlightReservation(FlightReservation flightReservation) {
-        this.flightReservation = flightReservation;
-    }
-
-    public CabinClassType getCabinClass() {
-        return cabinClassType;
-    }
-
-    public void setCabinClass(CabinClassType cabinClass) {
-        this.cabinClassType = cabinClass;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
 }

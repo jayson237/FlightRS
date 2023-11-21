@@ -5,6 +5,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,9 +13,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -29,29 +32,37 @@ public class Flight implements Serializable {
     private Long flightId;
 
     @Column(length = 32, nullable = false, unique = true)
+    @Size(min = 5, max = 32)
+    @NotNull
     private String flightNumber;
 
     @Column(nullable = false)
-    private Boolean isDisabled;
+    @NotNull
+    private boolean isDisabled;
 
-    @ManyToMany(mappedBy = "flights", cascade = {}, fetch = FetchType.LAZY)
-    private List<FlightReservation> reservations;
+    @Column
+    private String returnFlightNumber;
 
-    @OneToOne(mappedBy = "flight")
-    private FlightSchedulePlan flightSchedulePlans;
-
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
 
-    @OneToMany
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private AircraftConfiguration aircraftConfiguration;
 
+    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
+    private List<FlightSchedulePlan> flightSchedulePlans;
+
     public Flight() {
+        this.flightSchedulePlans = new ArrayList<>();
     }
 
-    public Flight(String flightNumber, Boolean isDisabled) {
+    public Flight(String flightNumber, boolean isDisabled, String returnFLightNumber) {
+        this();
         this.flightNumber = flightNumber;
         this.isDisabled = isDisabled;
+        this.returnFlightNumber = returnFLightNumber;
     }
 
     public Long getFlightId() {
@@ -70,28 +81,20 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
     }
 
-    public Boolean getIsDisabled() {
+    public boolean getIsDisabled() {
         return isDisabled;
     }
 
-    public void setIsDisabled(Boolean isDisabled) {
+    public void setIsDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
     }
 
-    public List<FlightReservation> getReservations() {
-        return reservations;
+    public String getReturnFlightNumber() {
+        return returnFlightNumber;
     }
 
-    public void setReservations(List<FlightReservation> reservations) {
-        this.reservations = reservations;
-    }
-
-    public FlightSchedulePlan getFlightSchedulePlans() {
-        return flightSchedulePlans;
-    }
-
-    public void setFlightSchedulePlans(FlightSchedulePlan flightSchedulePlans) {
-        this.flightSchedulePlans = flightSchedulePlans;
+    public void setReturnFlightNumber(String returnFlightNumber) {
+        this.returnFlightNumber = returnFlightNumber;
     }
 
     public FlightRoute getFlightRoute() {
@@ -100,6 +103,14 @@ public class Flight implements Serializable {
 
     public void setFlightRoute(FlightRoute flightRoute) {
         this.flightRoute = flightRoute;
+    }
+
+    public List<FlightSchedulePlan> getFlightSchedulePlans() {
+        return flightSchedulePlans;
+    }
+
+    public void setFlightSchedulePlans(List<FlightSchedulePlan> flightSchedulePlans) {
+        this.flightSchedulePlans = flightSchedulePlans;
     }
 
     public AircraftConfiguration getAircraftConfiguration() {

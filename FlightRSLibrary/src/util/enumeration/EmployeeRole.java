@@ -9,5 +9,5 @@ package util.enumeration;
  * @author timothy
  */
 public enum EmployeeRole {
-    FLEETMANAGER, ROUTEPLANNER, SCHEDULEMANAGER, SALESMANAGER
+    FLEETMANAGER, ROUTEPLANNER, SCHEDULEMANAGER, SALESMANAGER, SYSTEMADMIN;
 }

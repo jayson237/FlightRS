@@ -5,9 +5,12 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,38 +30,40 @@ public class Customer implements Serializable {
 
     @Column(length = 32, nullable = false)
     private String firstName;
-    
+
     @Column(length = 32, nullable = false)
     private String lastName;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String email;
-    
+
     @Column(length = 32, nullable = false, unique = true)
     private String mobileNumber;
-    
+
     @Column(length = 32, nullable = false)
     private String address;
-    
-    @Column(length = 32, nullable = false, unique = true)
-    private String username;
-    
+
     @Column(length = 32, nullable = false)
     private String password;
-    
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "customer", cascade = CascadeType.DETACH)
+    private List<Transaction> transactions;
+
     @OneToMany(mappedBy = "customer")
     private List<FlightReservation> flightReservations;
 
     public Customer() {
+        this.transactions = new ArrayList<>();
+        this.flightReservations = new ArrayList<>();
     }
 
-    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String username, String password) {
+    public Customer(String firstName, String lastName, String email, String mobileNumber, String address, String password) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.mobileNumber = mobileNumber;
         this.address = address;
-        this.username = username;
         this.password = password;
     }
 
@@ -110,16 +115,16 @@ public class Customer implements Serializable {
         this.address = address;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 
     public void setPassword(String password) {

@@ -12,8 +12,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.CabinClassType;
 
 /**
@@ -27,33 +29,42 @@ public class CabinClass implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
-    
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private CabinClassType type;
-    
+
     @Column(nullable = false)
+    @Min(0)
+    @Max(2)
+    @NotNull
     private Integer numberOfAisles;
-    
+
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfRows;
-    
+
     @Column(nullable = false)
+    @Min(1)
+    @NotNull
     private Integer numOfSeatsAbreast;
-    
+
     @Column(nullable = false)
-    private Integer maxCapacity;
-    
-    @Column(nullable = false)
+    @Size(min = 1, max = 5)
+    @NotNull
     private String seatingConfiguration;
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "aircraft_configuration_id", nullable = false)
-    private AircraftConfiguration aircraftConfiguration;
+
+    @Column(nullable = false)
+    @Min(1)
+    @NotNull
+    private Integer maxCapacity;
 
     public CabinClass() {
     }
 
-    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, Integer maxCapacity, String seatingConfiguration) {
+    public CabinClass(CabinClassType type, Integer numberOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, String seatingConfiguration, Integer maxCapacity) {
         this.type = type;
         this.numberOfAisles = numberOfAisles;
         this.numOfRows = numOfRows;
@@ -68,39 +79,6 @@ public class CabinClass implements Serializable {
 
     public void setCabinClassId(Long cabinClassId) {
         this.cabinClassId = cabinClassId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (cabinClassId != null ? cabinClassId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the cabinClassId fields are not set
-        if (!(object instanceof CabinClass)) {
-            return false;
-        }
-        CabinClass other = (CabinClass) object;
-        if ((this.cabinClassId == null && other.cabinClassId != null) || (this.cabinClassId != null && !this.cabinClassId.equals(other.cabinClassId))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entity.CabinClass[ id=" + cabinClassId + " ]";
-    }
-
-    public AircraftConfiguration getAircraftConfiguration() {
-        return aircraftConfiguration;
-    }
-
-    public void setAircraftConfiguration(AircraftConfiguration aircraftConfiguration) {
-        this.aircraftConfiguration = aircraftConfiguration;
     }
 
     public CabinClassType getType() {
@@ -149,6 +127,31 @@ public class CabinClass implements Serializable {
 
     public void setSeatingConfiguration(String seatingConfiguration) {
         this.seatingConfiguration = seatingConfiguration;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (cabinClassId != null ? cabinClassId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the cabinClassId fields are not set
+        if (!(object instanceof CabinClass)) {
+            return false;
+        }
+        CabinClass other = (CabinClass) object;
+        if ((this.cabinClassId == null && other.cabinClassId != null) || (this.cabinClassId != null && !this.cabinClassId.equals(other.cabinClassId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "entity.CabinClass[ id=" + cabinClassId + " ]";
     }
 
 }

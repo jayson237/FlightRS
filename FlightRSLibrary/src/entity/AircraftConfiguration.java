@@ -5,15 +5,22 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -26,31 +33,35 @@ public class AircraftConfiguration implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aircraftConfigurationId;
-    
+
     @Column(length = 32, nullable = false, unique = true)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String name;
-    
+
     @Column(nullable = false)
+    @Min(1)
+    @Max(4)
+    @NotNull
     private Integer numOfCabinClass;
-    
+
     @Column(nullable = false)
+    @NotNull
     private Integer maxSeats;
-    
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "flight_id")
-    private Flight flight;
-    
-    @OneToMany(mappedBy = "aircraftConfiguration")
-    private List<CabinClass> cabinClasses;
-    
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "aircraft_id", nullable = false)
+    @JoinColumn(nullable = false)
     private Aircraft aircraft;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List<CabinClass> cabinClasses;
+
     public AircraftConfiguration() {
+        this.cabinClasses = new ArrayList<>();
     }
 
     public AircraftConfiguration(String name, Integer numOfCabinClass, Integer maxSeats) {
+        this();
         this.name = name;
         this.numOfCabinClass = numOfCabinClass;
         this.maxSeats = maxSeats;
@@ -88,12 +99,12 @@ public class AircraftConfiguration implements Serializable {
         this.maxSeats = maxSeats;
     }
 
-    public Flight getFlights() {
-        return flight;
+    public Aircraft getAircraft() {
+        return aircraft;
     }
 
-    public void setFlights(Flight flights) {
-        this.flight = flight;
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
     }
 
     public List<CabinClass> getCabinClasses() {
@@ -102,14 +113,6 @@ public class AircraftConfiguration implements Serializable {
 
     public void setCabinClasses(List<CabinClass> cabinClasses) {
         this.cabinClasses = cabinClasses;
-    }
-
-    public Aircraft getAircraft() {
-        return aircraft;
-    }
-
-    public void setAircraft(Aircraft aircraft) {
-        this.aircraft = aircraft;
     }
 
     @Override

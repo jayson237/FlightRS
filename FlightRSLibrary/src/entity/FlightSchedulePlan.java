@@ -5,20 +5,26 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import util.enumeration.FlightScheduleType;
 
 /**
@@ -33,34 +39,53 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
 
+    @Column(nullable = false, length = 32)
+    @Size(min = 5, max = 32)
+    @NotNull
+    private String flightNumber;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private FlightScheduleType type;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
     private Date recurrentEndDate;
 
     @Column(nullable = false)
-    private boolean complementaryReturnFlight;
+    @NotNull
+    private boolean isDisabled;
 
-    @Column(nullable = false)
-    private Integer layOverDuration;
-
-    @OneToOne
-    @JoinColumn(name = "flight_id")
+    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
     private Flight flight;
 
-    @OneToMany(mappedBy = "flightSchedulePlan")
+    @OneToMany(mappedBy = "flightSchedulePlan", fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private List<FlightSchedule> flightSchedules;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false)
+    private List<Fare> fares;
+
     public FlightSchedulePlan() {
+        this.flightSchedules = new ArrayList<>();
+        this.fares = new ArrayList<>();
     }
 
-    public FlightSchedulePlan(FlightScheduleType type, Date recurrentEndDate, boolean complementaryReturnFlight, Integer layOverDuration) {
+    public FlightSchedulePlan(String flightNumber, FlightScheduleType type, boolean isDisabled) {
+        this();
+        this.flightNumber = flightNumber;
+        this.type = type;
+        this.recurrentEndDate = null;
+        this.isDisabled = isDisabled;
+    }
+
+    public FlightSchedulePlan(String flightNumber, FlightScheduleType type, Date recurrentEndDate, boolean isDisabled) {
+        this();
+        this.flightNumber = flightNumber;
         this.type = type;
         this.recurrentEndDate = recurrentEndDate;
-        this.complementaryReturnFlight = complementaryReturnFlight;
-        this.layOverDuration = layOverDuration;
+        this.isDisabled = isDisabled;
     }
 
     public Long getFlightSchedulePlanId() {
@@ -71,12 +96,28 @@ public class FlightSchedulePlan implements Serializable {
         this.flightSchedulePlanId = flightSchedulePlanId;
     }
 
-    public FlightScheduleType getFlightSchedule() {
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public FlightScheduleType getType() {
         return type;
     }
 
-    public void setFlightSchedule(FlightScheduleType flightSchedule) {
-        this.type = flightSchedule;
+    public void setType(FlightScheduleType type) {
+        this.type = type;
+    }
+
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
     }
 
     public Date getRecurrentEndDate() {
@@ -85,22 +126,6 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setRecurrentEndDate(Date recurrentEndDate) {
         this.recurrentEndDate = recurrentEndDate;
-    }
-
-    public boolean isComplementaryReturnFlight() {
-        return complementaryReturnFlight;
-    }
-
-    public void setComplementaryReturnFlight(boolean complementaryReturnFlight) {
-        this.complementaryReturnFlight = complementaryReturnFlight;
-    }
-
-    public Integer getLayOverDuration() {
-        return layOverDuration;
-    }
-
-    public void setLayOverDuration(Integer layOverDuration) {
-        this.layOverDuration = layOverDuration;
     }
 
     public Flight getFlight() {
@@ -117,6 +142,14 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
         this.flightSchedules = flightSchedules;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
 
     @Override

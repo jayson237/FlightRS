@@ -30,7 +30,7 @@ public class Employee implements Serializable {
     private String name;
     
     @Column(length = 32, nullable = false, unique = true)
-    private String username;
+    private String email;
     
     @Column(length = 32, nullable = false)
     private String password;
@@ -41,9 +41,9 @@ public class Employee implements Serializable {
     public Employee() {
     }
 
-    public Employee(String name, String username, String password, EmployeeRole employeeRole) {
+    public Employee(String name, String email, String password, EmployeeRole employeeRole) {
         this.name = name;
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.employeeRole = employeeRole;
     }
@@ -64,12 +64,12 @@ public class Employee implements Serializable {
         this.name = name;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
