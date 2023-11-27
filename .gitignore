@@ -28,20 +28,19 @@ FlightRS-ejb/nbjproject/private/
 FlightRS-ejb/build/
 FlightRS-ejb/dist/
 
-FlightRSManagementClient/nbjproject/private/
-FlightRSManagementClient/build/
-FlightRSManagementClient/dist/
+FRSManagementClient/nbjproject/private/
+FRSManagementClient/build/
+FRSManagementClient/dist/
 
-FlightRSReservationClient/nbjproject/private/
-FlightRSReservationClient/build/
-FlightRSReservationClient/dist/
+FRSReservationClient/nbjproject/private/
+FRSReservationClient/build/
+FRSReservationClient/dist/
 
 FlightRSLibrary/nbjproject/private/
 FlightRSLibrary/build/
 FlightRSLibrary/dist/
 
-FRSManagementClient/
-FRSReservationClient/
+
 
 
 
